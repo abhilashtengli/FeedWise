@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema(
           throw new Error("Invalid email address");
         }
       }
+    },
+    password: {
+      type: String,
+      required: true,
+      minLength: 6,
+      select: false
     }
   },
   { timestamps: true }
@@ -27,4 +33,4 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 
-module.exports = User;
+export default User;
