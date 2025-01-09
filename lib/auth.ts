@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Username", type: "email" },
         password: { label: "Password", type: "password" }
       },
-      authorize: async (credentials) => {
+      authorize: async credentials => {
         await connectDB();
         if (!credentials || !credentials.email || !credentials.password) {
           throw new Error("Invalid credentials");
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
           email: session.user.email
         };
       }
-      session.accessToken = token as unknown as JWT;
+      session.accessToken = (token as unknown) as JWT;
 
       return session;
     }
