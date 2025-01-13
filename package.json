@@ -19,6 +19,7 @@
     "openai": "^4.78.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tiktoken": "^1.0.18",
     "validator": "^13.12.0"
   },
   "devDependencies": {
