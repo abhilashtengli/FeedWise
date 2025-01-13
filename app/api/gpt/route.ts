@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { franc } from "franc-min";
 import { Filter } from "bad-words";
-// import openai from "@/lib/openai";
+import OpenAI from "openai";
+import openai from "@/lib/openai";
 const filter = new Filter();
 
 export async function POST(req: NextRequest) {
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
 
 **Customer Reviews:**
       ${cleanedReviews}
-
+  Note : You must return a valid JSON object as I mentioned without extra text or formatting.
     Now generate structured reports based on these categories:
 ### **Input Validation:**  
 Before processing, check if the input contains meaningful customer reviews.  
@@ -45,7 +46,7 @@ If the input lacks valid feedback (e.g., random characters, empty text, gibberis
 {
   "reportStatus": "success",
   "reportMessage": "Here is the report",
-  "reports": [] //In this add all the below 9 reports in with their key & value
+  "reports": [] //In this add all the below 9 reports with their key & value
 }, 
 1. **Sentiment Analysis Report (R1)**
    - Output positive, neutral, and negative feedback percentages. 
@@ -144,18 +145,39 @@ Example :
     "Complaint 3"
   ]
 }
-
+Note : If there are any personal or sensitive topics please avoid answering those questions.
     `;
-    console.log(prompt);
 
-    
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "system", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 950,
+      frequency_penalty: 0.5
+    });
+
+    const aiResponse = response.choices[0]?.message?.content?.trim();
+    console.log("RESPONSE : ",aiResponse);
 
     return NextResponse.json({
-      data: prompt,
+      data: aiResponse,
       message: "Successfull"
     });
   } catch (error) {
-    return NextResponse.json({ error: error });
+    if (error instanceof OpenAI.APIError) {
+      const { name, status, headers, message } = error;
+      return NextResponse.json(
+        {
+          name,
+          status,
+          headers,
+          message
+        },
+        { status }
+      );
+    } else {
+      return NextResponse.json({ message: "An error Occured", error: error });
+    }
   }
 }
 

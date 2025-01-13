@@ -206,11 +206,11 @@ Example
 
 ## Prompt 
 
-    `Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews :
+  `Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews :
 
 **Customer Reviews:**
       ${cleanedReviews}
-
+  Note : You must return a valid JSON object as I mentioned without extra text or formatting.
     Now generate structured reports based on these categories:
 ### **Input Validation:**  
 Before processing, check if the input contains meaningful customer reviews.  
@@ -225,7 +225,7 @@ If the input lacks valid feedback (e.g., random characters, empty text, gibberis
 {
   "reportStatus": "success",
   "reportMessage": "Here is the report",
-  "reports": [] //In this add all the below 9 reports in with their key & value
+  "reports": [] //In this add all the below 9 reports with their key & value
 }, 
 1. **Sentiment Analysis Report (R1)**
    - Output positive, neutral, and negative feedback percentages. 
@@ -323,4 +323,5 @@ Example :
     "Complaint 2",
     "Complaint 3"
   ]
-}`
+}
+Note : If there are any personal or sensitive topics please avoid answering those questions.`
