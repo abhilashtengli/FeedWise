@@ -9,11 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bad-words": "^4.0.0",
     "bcryptjs": "^2.4.3",
     "feedwise": "file:",
+    "franc-min": "^6.2.0",
     "mongoose": "^8.9.3",
     "next": "15.1.3",
     "next-auth": "^4.24.11",
+    "openai": "^4.78.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "validator": "^13.12.0"
