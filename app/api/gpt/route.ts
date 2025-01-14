@@ -6,6 +6,8 @@ import OpenAI from "openai";
 import { countTokens } from "@/utils/tokenizer";
 const filter = new Filter();
 
+//Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
+
 export async function POST(req: NextRequest) {
   try {
     const text = await req.text();
