@@ -26,6 +26,20 @@ const userSchema = new mongoose.Schema(
       required: true,
       minLength: 6,
       select: false
+    },
+    userType: {
+      type: String,
+      enum: ["free", "paid", "premium"],
+      default: "free",
+      required: true
+    },
+    tokensUsed: {
+      type: Number,
+      default: 0
+    },
+    tokenLimit: {
+      type: Number,
+      default: 15000
     }
   },
   { timestamps: true }

@@ -7,6 +7,7 @@ export function countTokens(
   if (!text) return 0;
 
   try {
+    if (!text) return 0;
     const encoder = encoding_for_model(model); // Load the encoding for the specific model
     const tokens = encoder.encode(text); // Convert text into tokens
     const tokenCount = tokens.length;
