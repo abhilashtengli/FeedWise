@@ -4,7 +4,7 @@ import openai from "@/lib/openai";
 import { countTokens } from "@/utils/tokenizer";
 import { isValidText } from "@utils/isValidText";
 import { isCleanText, removeEmojis } from "@/utils/isCleanText";
-import User from "@/models/User";
+import Subscription from "@/models/Subscription";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
 
@@ -41,15 +41,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const tokenData = await User.findById("6787498129df1e39a08b29b9").select(
-      "tokensUsed tokenLimit"
-    );
-    if (count + tokenData.tokensUsed > tokenData.tokenLimit) {
+    const subDetails = await Subscription.findOne({
+      user: "6788977ee000348f4e99e31f" //Replace with Id
+    }).select("tokenUsed tokenLimit");
+
+    if (!subDetails) {
+      return NextResponse.json({
+        message:
+          "Subscription details not found. Please ensure the user has a valid subscription."
+      });
+    }
+
+    if (count + subDetails.tokenUsed > subDetails.tokenLimit) {
       return NextResponse.json({
         message:
           "Your request exceeds the token limit . Please Upgrade your free tier plan."
       });
     }
+
     const prompt = `
         Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews :
 
@@ -179,15 +188,18 @@ export async function POST(req: NextRequest) {
       frequency_penalty: 0.5
     });
 
-    const aiResponse = response.choices[0]?.message?.content?.trim();
+    //Get response
+    const aiResponse = response.choices[0]?.message?.content?.trim(); //PENDING...
+    //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
     console.log("RESPONSE : ", aiResponse);
-    const tokensUsedInThisRequest = countTokens(aiResponse || "");
+    const tokensUsedInThisRequest = countTokens(aiResponse || ""); //PENDING...
 
     //Update
-    User.updateOne(
-      { _id: "6787498129df1e39a08b29b9" },
-      { $set: { tokensUsed: tokensUsedInThisRequest } }
+    Subscription.updateOne(
+      { user: "6788977ee000348f4e99e31f" }, //Replace with Id
+      { $set: { tokenUsed: tokensUsedInThisRequest } }
     );
+
     return NextResponse.json({
       data: cleanedReviewsWithoutEmoji,
       message: "Successfull",

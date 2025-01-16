@@ -1,3 +1,4 @@
+import Subscription from "@/models/Subscription";
 import User from "@/models/User";
 import connectDB from "@lib/database";
 import bcrypt from "bcryptjs";
@@ -36,6 +37,14 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
     const savedUser = await newUser.save();
+    const subscription = new Subscription({
+      user: newUser._id,
+      plan: "free",
+      tokensUsed: 0,
+      tokenLimit: 15000,
+      status: "active"
+    });
+    await subscription.save();
 
     const dataToSend = userSafeDataToSend.reduce(
       (obj: { [key: string]: string }, key: string) => {
