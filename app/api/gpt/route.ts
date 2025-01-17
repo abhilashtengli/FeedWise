@@ -5,11 +5,13 @@ import { countTokens } from "@/utils/tokenizer";
 import { isValidText } from "@utils/isValidText";
 import { isCleanText, removeEmojis } from "@/utils/isCleanText";
 import Subscription from "@/models/Subscription";
+import connectDB from "@/lib/database";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
 
 export async function POST(req: NextRequest) {
   try {
+     await connectDB();
     const text = await req.text();
     const sanitizedText = text.replace(/[\u0000-\u001F]+/g, " ");
     const body = JSON.parse(sanitizedText);

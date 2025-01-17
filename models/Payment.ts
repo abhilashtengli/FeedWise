@@ -4,34 +4,41 @@ const paymentSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
-    unique: true
+    required: true
   },
-  subsciption: {
+  subscription: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subscription",
     required: true
   },
+  orderId: { type: String, required: true, unique: true }, // Razorpay Order ID
   paymentMethod: {
     type: String,
-    enum: ["debit_card", "paypal", "phonePay", "other"],
+    default: "Razorpay",
     required: true
   },
   paymentStatus: {
     type: String,
-    enum: ["active", "failed", "pending", "cancelled", "not_purchased"],
+    enum: [
+      "created",
+      "completed",
+      "failed",
+      "refunded",
+      "pending",
+      "cancelled",
+      "not_purchased"
+    ],
     default: "not_purchased"
   },
-  amountPaid: { type: Number, required: true },
+  amount: { type: Number, required: true },
   paymentDate: { type: Date, required: true },
   nextPaymentDate: { type: Date, required: true },
   transactionId: { type: String, required: true, unique: true },
   billingCycle: {
     type: String,
-    enum: ["monthly", "annually"],
+    enum: ["monthly", "annually", "3 months"],
     default: "monthly"
   },
-  invoiceNumber: { type: String, unique: true },
   paymentHistory: [
     {
       amount: { type: Number },
