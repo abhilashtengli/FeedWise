@@ -1,32 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import connectDB from "@/lib/database";
 import Payment from "@/models/Payment";
 import { addMonths } from "date-fns";
 import Subscription from "@/models/Subscription";
+
+import { validateWebhookSignature } from "razorpay/dist/utils/razorpay-utils";
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
     const body = await req.text();
-    const signature = req.headers.get("x-razorpay-signature");
+    const signature = req.headers.get("x-razorpay-signature") as string;
 
-    const expectedsignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!)
-      .update(body)
-      .digest("hex");
-    if (signature !== expectedsignature) {
+    // const expectedsignature = crypto
+    //   .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!)
+    //   .update(body)
+    //   .digest("hex");
+    // if (signature !== expectedsignature) {
+    //   return NextResponse.json(
+    //     {
+    //       message: "Invalid signature"
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
+    const isWebhookValid = validateWebhookSignature(
+      JSON.stringify(req.body),
+      signature,
+      process.env.RAZORPAY_WEBHOOK_SECRET as string
+    );
+    if (!isWebhookValid) {
       return NextResponse.json(
-        {
-          message: "Invalid signature"
-        },
+        { message: "Invalid webhook signature" },
         { status: 400 }
       );
     }
     const event = JSON.parse(body);
     if (event.event == "payment_captured") {
       const payment = event.payload.payment.entity;
-      const paymentRecord = await Payment.findOne({ orderId: payment.orderId });
+      const paymentRecord = await Payment.findOne({
+        orderId: payment.order_id
+      });
 
       if (!paymentRecord) {
         return NextResponse.json(
@@ -56,13 +70,14 @@ export async function POST(req: NextRequest) {
       }
 
       const paymentOrderUpdate = await Payment.findOneAndUpdate(
-        { orderId: payment.orderId },
+        { orderId: payment.order_id },
         {
           $set: {
-            paymentStatus: "completed",
-            transactionId: payment.id,
+            paymentStatus: payment.status,
+            paymentId: payment.id,
             nextPaymentDate,
-            subscriptionExpiry
+            subscriptionExpiry,
+            paymentDate
           },
           $push: {
             paymentHistory: {
@@ -76,16 +91,19 @@ export async function POST(req: NextRequest) {
         { new: true }
       ).populate([{ path: "user", select: "name email" }]);
 
-      const subId = paymentRecord.subscription;
+      const subId = paymentRecord.subscription; //Look into it in the future
 
-      await Subscription.findOneAndUpdate(subId, {
-        $set: {
-          tokenUsed: setTokenUsed,
-          tokenLimit: setTokenLimit,
-          renewalDate: nextPaymentDate,
-          status: "active"
+      await Subscription.findOneAndUpdate(
+        { _id: subId },
+        {
+          $set: {
+            tokenUsed: setTokenUsed,
+            tokenLimit: setTokenLimit,
+            renewalDate: nextPaymentDate,
+            status: "active"
+          }
         }
-      });
+      );
 
       if (!paymentOrderUpdate) {
         console.error("Failed to update payment order");
@@ -93,6 +111,9 @@ export async function POST(req: NextRequest) {
         console.log("Payment order updated successfully");
       }
     }
+    return NextResponse.json({
+      message: "Success"
+    });
   } catch (error) {
     console.log(error);
   }

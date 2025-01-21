@@ -1,24 +1,26 @@
-import authOptions from "@/lib/auth";
+// import authOptions from "@/lib/auth";
 import connectDB from "@/lib/database";
 import Payment from "@/models/Payment";
 import Subscription from "@/models/Subscription";
-import { getServerSession } from "next-auth";
+// import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
-import z from "zod";
+import { z } from "zod";
+import plans from "@/utils/constants";
+import razorPay from "@/utils/razorpay";
+import mongoose from "mongoose";
 
 const requestBodySchema = z.object({
   planType: z.enum(["paid", "premium"]) // Restrict planType to "paid" or "premium"
 });
 
-const razorPay = new Razorpay({
-  key_id: process.env.RazorPay_Key_ID!,
-  key_secret: process.env.RazorPay_Secret_Key!
-});
-
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
+    // const session = await getServerSession(authOptions);
+    // if (!session) {
+    //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    // }
+
     const body = await request.json();
     const result = requestBodySchema.safeParse(body);
     if (!result.success) {
@@ -28,17 +30,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const { planType } = result.data;
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    const plans: Record<
-      "paid" | "premium",
-      { amount: number; tokens: number; billingCycle: string }
-    > = {
-      paid: { amount: 799, tokens: 100000, billingCycle: "monthly" },
-      premium: { amount: 2499, tokens: 300000, billingCycle: "3 months" }
-    };
+
     if (!plans[planType]) {
       return NextResponse.json({ message: "Invalid plan" });
     }
@@ -47,29 +39,40 @@ export async function POST(request: NextRequest) {
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
       notes: {
-        // user_id : session.id
-        plan_Type: planType,
-        info: "Subcription for FeedWise"
+        // userId: "session.id",
+        // name: "session.name",
+        planType: planType
       }
     });
-    const sub = await Subscription.create({
-      user: "userId", //session.id
+    const userId = new mongoose.Types.ObjectId(); // for testing purposes ponly remove after that
+    const subData = {
+      user: userId /*change in production*/,
       plan: planType,
       status: "pending"
-    });
-    const newOrder = await Payment.create({
-      user: "userId", //session.id
-      subsciption: sub._id,
+    }; //session.id
+    const subscription = await new Subscription(subData).save();
+
+    const payment = {
+      user: userId,
+      subscription: subscription._id,
       orderId: order.id,
       paymentStatus: "pending",
-      amount: plans[planType].amount * 100,
-      billingCycle: plans[planType].billingCycle
-    });
-    return NextResponse.json({
-      orderId: order.id,
       amount: order.amount,
-      currency: order.currency,
-      dbOrderId: newOrder._id
+      billingCycle: plans[planType].billingCycle,
+      receipt: order.receipt,
+      notes: order.notes
+    }; // change in production //session.id
+    const savedPayment = await new Payment(payment).save();
+
+    console.log("SavedPayment : " + savedPayment);
+    console.log("SubData : " + subscription);
+
+    return NextResponse.json({
+      data: {
+        paymentData: savedPayment,
+        subData: subscription,
+        key_id: process.env.RazorPay_Key_ID
+      }
     });
   } catch (error) {
     console.error(error);

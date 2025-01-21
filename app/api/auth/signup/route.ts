@@ -41,8 +41,7 @@ export async function POST(req: NextRequest) {
       user: newUser._id,
       plan: "free",
       tokensUsed: 0,
-      tokenLimit: 15000,
-      status: "active"
+      tokenLimit: 15000
     });
     await subscription.save();
 
