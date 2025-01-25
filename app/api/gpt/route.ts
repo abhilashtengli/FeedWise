@@ -7,9 +7,13 @@ import { isCleanText, removeEmojis } from "@/utils/isCleanText";
 import Subscription from "@/models/Subscription";
 import connectDB from "@/lib/database";
 import { customerFeedbackPrompt } from "@/lib/constants.ts/prompt";
-
+import { z } from "zod";
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
-
+const validInput = z.object({
+  productName: z.string(),
+  productCategory: z.string(),
+  countryOfSales: z.string()
+});
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
@@ -23,6 +27,18 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    const result = validInput.safeParse(body);
+
+    if (!result.success) {
+      return NextResponse.json({
+        message: "Please provide valid Input",
+        error: result.error.errors
+      });
+    }
+    const productName = body.productName as string;
+    const productCategory = body.productCategory as string;
+    const countryOfSale = body.countryOfSale as string;
+
     const cleanedReviews = body.messages.replace(/\s+/g, " ").trim();
 
     if (!isValidText(cleanedReviews) || !isCleanText(cleanedReviews)) {
@@ -62,7 +78,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const prompt = customerFeedbackPrompt;
+    const prompt = customerFeedbackPrompt(
+      productName,
+      productCategory,
+      countryOfSale
+    );
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -86,7 +106,7 @@ export async function POST(req: NextRequest) {
       { user: "6788977ee000348f4e99e31f" }, //Replace with Id
       { $set: { tokenUsed: tokensUsedInThisRequest } }
     );
-
+    // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
       data: aiResponse,
       message: "Successfull",

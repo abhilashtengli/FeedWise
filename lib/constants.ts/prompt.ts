@@ -1,9 +1,17 @@
-export const customerFeedbackPrompt =  `
-        Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews :
+export const customerFeedbackPrompt = (
+  productName: string,
+  productCategory: string,
+  countryOfSale: string
+) => `
+    Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews and generate structured reports in JSON format.
+    Note : You must return a valid JSON object as I mentioned without extra text or formatting.
 
-   
-      Note : You must return a valid JSON object as I mentioned without extra text or formatting.
-        Now generate structured reports based on these categories:
+     Product details :{
+      productName: ${productName},
+      productCategory: ${productCategory},
+      countryOfSale: ${countryOfSale}
+    }
+    
     ### **Input Validation:**
     Before processing, check if the input contains meaningful customer reviews.
     If the input lacks valid feedback (e.g., random characters, empty text, gibberish or irrelevant data), return:
@@ -20,7 +28,8 @@ export const customerFeedbackPrompt =  `
       "reports": [] //In this add all the below 9 reports with their key & value
     },
     1. **Sentiment Analysis Report (R1)**
-       - Output positive, neutral, and negative feedback percentages.
+    - Analyze customer sentiment accurately, accounting for mixed emotions and sarcasm.
+    - Provide percentages of positive, neutral, and negative sentiments.
      Example :
     {
       "report": "R1",
@@ -29,19 +38,18 @@ export const customerFeedbackPrompt =  `
       "negative": "13%"
     }
     2. **Key Themes and Topics Extraction (R2)**
-    - Extract the most mentioned topics and their percentage of occurrence.
+    - Extract most mentioned topics based on predefined categories (e.g., product features, pricing, delivery or can be anything valid topics).
+    - Include only topics with at least 5% occurrence.
     Example :
      {
       "report": "R2",
-      "most_mentioned_topics": [
+      "mostMentionedTopics": [
         {"topic": "Topic name", "percentage": "45%"},
         {"topic": "Topic name", "percentage": "30%"},
-        {"topic": "Topic name", "percentage": "15%"},
-        {"topic": "Topic name", "percentage": "10%"}
       ]
     }
     3. **Improvement Suggestions Report (R3)**
-    - Provide key actionable suggestions.
+    - Generate actionable suggestions linked to recurring complaints (e.g., mentioned by at least 10% of reviews).
     Example :
     {
       "report": "R3",
@@ -52,68 +60,82 @@ export const customerFeedbackPrompt =  `
       ]
     }
     4. **Comparative Analysis Report (R4)**
-    - Compare product ratings and highlight strengths/weaknesses.
+    - Highlight product ratings and strengths/weaknesses compared to competitors if external data is provided
+    - If competitor data is unavailable for the product, use market averages based on external sources.
+    - If competitor data is completely unavailable for the product then give the response as :
+      {
+        "report": "R4",
+        "message": "Comparative data unavailable. Report skipped."
+       }
     Example :
     {
       "report": "R4",
       "myProductRating": 4.2,
       "overAllCompetitorRating": 4.5,
       "MyProductStrengths": ["Better quality", "User-friendly design"],
-      "Needs Improvement": ["Pricing slightly higher than competitors", "Better packaging"]
+      "NeedsImprovement": ["Pricing slightly higher than competitors", "Better packaging"]
     }
+     
+
     5. **Customer Satisfaction Score (R5)**
-    - Calculate and display the satisfaction score.
+    - Calculate a satisfaction score from valid ratings and feedback.
     Example :
     {
       "report": "R5",
-      "Satisfaction Score": "8.1/10"
+      "SatisfactionScore": "8.1/10"
     }
     6. **Trend Analysis Report (R6)**
     - Identify trending positive and negative feedback.
     Example :
     {
       "report": "R6",
-      "trending_positive": [
+      "trendingPositive": [
         {"Customers love the new design": "15%"},
         {"Customers satisfied with packaging": "46%"}
       ],
-      "trending_negative": [
+      "trendingNegative": [
         {"Delivery delays have increased complaints": "8%"},
         {"Too expensive": "14%"}
       ]
     }
     7. **Competitive Benchmarking Report (R7)**
-    - Compare product ratings and key performance indicators.
+    - Compare product ratings and performance with market averages.
+    - If competitor data is completely unavailable for the product then give the response as :
+      {
+        "report": "R4",
+        "message": "Comparative data unavailable. Report skipped."
+       }
+      else
     Example :
     {
       "report": "R7",
       "marketAvgRating": "4.0/5",
-      "your Product": "4.2/5",
+      "yourProduct": "4.2/5",
       "points": [
         "You are **above average** in product quality",
         "Below competitors in **customer service response time**"
       ]
     }
     8. **Response Strategy Development (R8)**
-    - Provide strategies for different types of reviews.
+    - Provide response strategies for negative, neutral, and positive reviews.
     Example :
     {
       "report": "R8",
-      "Recommended Actions": {
+      "RecommendedActions": {
         "negativeReviews": "Apologize, offer compensation, and improve issue resolution speed.",
         "positiveReviews": "Encourage customer advocacy & referrals.",
         "neutralReviews": "Seek more feedback to understand concerns."
       }
     }
     9. **Customer Complaints List (R9)**
-    - Generate a list of customer complaints (maximum 5).
+    - Generate a list of specific customer complaints  (maximum 5).
     - If no complaints exist, return an empty list.
     Example :
     {
-      "customer_complaints": [
-        "Complaint 1",
-        "Complaint 2",
-        "Complaint 3"
+      "customerComplaints": [
+        "Complaint1",
+        "Complaint2",
+        "Complaint3"
       ]
     }
     Note : If there are any personal or sensitive topics please avoid answering those questions.`;
