@@ -4,7 +4,14 @@ export const customerFeedbackPrompt = (
   countryOfSale: string
 ) => `
     Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews and generate structured reports in JSON format.
-    Note : You must return a valid JSON object as I mentioned without extra text or formatting.
+   
+    ### **Important Guidelines**:
+    - Ensure all **property names** and **values** are enclosed in **double quotes**.
+    - JSON **must be valid**. Make sure there are **no trailing commas**.
+    - If a key is a string, it must be wrapped in double quotes.
+    - If a value is a string, it must also be wrapped in double quotes.
+    - After every key-value pair, ensure a **comma** separates them unless it’s the last pair in an object or array.
+    - Compulsorily you must provide all the below 9 reports (even if no data exists for a report, return an empty array, empty object, or a "skipped" message for that report)
 
      Product details :{
       productName: ${productName},

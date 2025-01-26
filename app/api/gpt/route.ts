@@ -123,16 +123,18 @@ export async function POST(req: NextRequest) {
 
     console.log("Parsed RESPONSE : ", aiResponse); // I need to make some correction and get correct response
 
-    let parsedResponse;
-    try {
-      parsedResponse = JSON.parse(aiResponse);
-    } catch (err) {
-      console.error("Failed to parse AI response:", err);
-      return NextResponse.json({
-        message: "Failed to parse AI response",
-        error: err
-      });
-    }
+    // let parsedResponse;
+    // try {
+    //   const cleanedResponse = cleanJsonResponse(aiResponse);
+
+    //   parsedResponse = cleanedResponse;
+    // } catch (err) {
+    //   console.error("Failed to parse AI response:", err);
+    //   return NextResponse.json({
+    //     message: "Failed to parse AI response",
+    //     error: err
+    //   });
+    // }
 
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
     const tokensUsedInThisRequest = countTokens(aiResponse || ""); //PENDING...
@@ -144,7 +146,7 @@ export async function POST(req: NextRequest) {
     );
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
-      data: parsedResponse,
+      data: aiResponse,
       message: "Successfull",
       TokenCount: count
     });
@@ -165,3 +167,28 @@ export async function POST(req: NextRequest) {
     }
   }
 }
+
+// function cleanJsonResponse(response: string) {
+//   try {
+//     response = response.replace(/([a-zA-Z0-9_]+)(?=\s*[:\s{])/g, '"$1"');
+
+//     // Enclose string values in quotes if they are not already
+//     response = response.replace(/:\s*([A-Za-z0-9_\-]+)(?=\s*[\},])/g, ':"$1"');
+
+//     // Add missing quotes for percentage values
+//     response = response.replace(/(\d+)%/g, '"$1%"');
+
+//     // Add missing quotes around string values that are not quoted
+//     response = response.replace(
+//       /:([\s]*)([A-Za-z0-9_\-\s]+)(?=[\},])/g,
+//       ':"$2"'
+//     );
+
+//     // Remove any trailing commas
+//     response = response.replace(/,\s*([\]}])/g, "$1");
+//     return JSON.parse(response);
+//   } catch (err) {
+//     console.error("Failed to parse AI response:", err);
+//     return null;
+//   }
+// }
