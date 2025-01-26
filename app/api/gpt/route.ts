@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const sanitizedText = text.replace(/[\u0000-\u001F]+/g, " ");
     const body = JSON.parse(sanitizedText);
 
-    console.log(body);
+    // console.log(body);
 
     if (!body.messages || typeof body.messages !== "string") {
       return NextResponse.json(
@@ -106,7 +106,6 @@ export async function POST(req: NextRequest) {
       max_tokens: 950,
       frequency_penalty: 0.5
     });
-    console.log("RESOPONSE : " + response);
     if (
       !response.choices ||
       !response.choices[0]?.message?.content ||
@@ -122,7 +121,7 @@ export async function POST(req: NextRequest) {
     //Get response
     const aiResponse = response.choices[0].message.content.trim(); //PENDING...
 
-    console.log("Parsed RESPONSE : ", aiResponse);
+    console.log("Parsed RESPONSE : ", aiResponse); // I need to make some correction and get correct response
 
     let parsedResponse;
     try {
