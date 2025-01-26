@@ -8,18 +8,22 @@ import Subscription from "@/models/Subscription";
 import connectDB from "@/lib/database";
 import { customerFeedbackPrompt } from "@/lib/constants.ts/prompt";
 import { z } from "zod";
+
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
 const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
-  countryOfSales: z.string()
+  countryOfSale: z.string()
 });
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const text = await req.text();
     const sanitizedText = text.replace(/[\u0000-\u001F]+/g, " ");
     const body = JSON.parse(sanitizedText);
+
+    console.log(body);
 
     if (!body.messages || typeof body.messages !== "string") {
       return NextResponse.json(
@@ -40,6 +44,14 @@ export async function POST(req: NextRequest) {
     const countryOfSale = body.countryOfSale as string;
 
     const cleanedReviews = body.messages.replace(/\s+/g, " ").trim();
+    if (cleanedReviews.length === 0) {
+      return NextResponse.json({
+        reportStatus: "error",
+        reportMessage:
+          "Invalid input. Please provide actual customer reviews for analysis.",
+        reports: null
+      });
+    }
 
     if (!isValidText(cleanedReviews) || !isCleanText(cleanedReviews)) {
       return NextResponse.json({
@@ -61,7 +73,7 @@ export async function POST(req: NextRequest) {
     }
 
     const subDetails = await Subscription.findOne({
-      user: "6788977ee000348f4e99e31f" //Replace with Id
+      user: "67962901935d078e1488921f" //Replace with Id
     }).select("tokenUsed tokenLimit");
 
     if (!subDetails) {
@@ -94,21 +106,46 @@ export async function POST(req: NextRequest) {
       max_tokens: 950,
       frequency_penalty: 0.5
     });
+    console.log("RESOPONSE : " + response);
+    if (
+      !response.choices ||
+      !response.choices[0]?.message?.content ||
+      typeof response.choices[0].message.content !== "string"
+    ) {
+      return NextResponse.json({
+        message:
+          "OpenAI API returned an unexpected response. Please try again later.",
+        error: "Invalid or missing content in OpenAI response"
+      });
+    }
 
     //Get response
-    const aiResponse = response.choices[0]?.message?.content?.trim(); //PENDING...
+    const aiResponse = response.choices[0].message.content.trim(); //PENDING...
+
+    console.log("Parsed RESPONSE : ", aiResponse);
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(aiResponse);
+    } catch (err) {
+      console.error("Failed to parse AI response:", err);
+      return NextResponse.json({
+        message: "Failed to parse AI response",
+        error: err
+      });
+    }
+
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    console.log("RESPONSE : ", aiResponse);
     const tokensUsedInThisRequest = countTokens(aiResponse || ""); //PENDING...
 
     //Update
     Subscription.updateOne(
-      { user: "6788977ee000348f4e99e31f" }, //Replace with Id
-      { $set: { tokenUsed: tokensUsedInThisRequest } }
+      { user: "67962901935d078e1488921f" }, //Replace with Id
+      { $inc: { tokenUsed: tokensUsedInThisRequest } }
     );
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
-      data: aiResponse,
+      data: parsedResponse,
       message: "Successfull",
       TokenCount: count
     });
