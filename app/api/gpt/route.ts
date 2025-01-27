@@ -13,7 +13,8 @@ import { z } from "zod";
 const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
-  countryOfSale: z.string()
+  countryOfSale: z.string(),
+  messages: z.string().min(1, "Reviews must be a non-empty string")
 });
 
 export async function POST(req: NextRequest) {
@@ -22,8 +23,6 @@ export async function POST(req: NextRequest) {
     const text = await req.text();
     const sanitizedText = text.replace(/[\u0000-\u001F]+/g, " ");
     const body = JSON.parse(sanitizedText);
-
-    // console.log(body);
 
     if (!body.messages || typeof body.messages !== "string") {
       return NextResponse.json(
@@ -65,16 +64,24 @@ export async function POST(req: NextRequest) {
     const cleanedReviewsWithoutEmoji = removeEmojis(cleanedReviews);
     const count = countTokens(cleanedReviewsWithoutEmoji);
 
-    if (count > 5000) {
+    if (count > 2500) {
       return NextResponse.json({
         message:
-          "Your request exceeds the token limit (5000). Please reduce the input size and try again."
+          "Your request exceeds the token limit (2500). Please reduce the input size and try again."
       });
     }
 
     const subDetails = await Subscription.findOne({
       user: "67962901935d078e1488921f" //Replace with Id
     }).select("tokenUsed tokenLimit");
+
+    console.log(
+      "USed : " +
+        subDetails.tokenUsed +
+        " " +
+        "Limit : " +
+        subDetails.tokenLimit
+    );
 
     if (!subDetails) {
       return NextResponse.json({
@@ -97,13 +104,13 @@ export async function POST(req: NextRequest) {
     );
 
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: cleanedReviews }
       ],
       temperature: 0.7,
-      max_tokens: 950,
+      max_tokens: 1300,
       frequency_penalty: 0.5
     });
     if (
@@ -119,11 +126,12 @@ export async function POST(req: NextRequest) {
     }
 
     //Get response
-    const aiResponse = response.choices[0].message.content.trim(); //PENDING...
+    const aiResponse = response.choices[0].message.content.trim();
 
-    console.log("Parsed RESPONSE : ", aiResponse); // I need to make some correction and get correct response
+    console.log("Response : " + aiResponse);
 
     // let parsedResponse;
+
     // try {
     //   const cleanedResponse = cleanJsonResponse(aiResponse);
 
@@ -137,12 +145,19 @@ export async function POST(req: NextRequest) {
     // }
 
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    const tokensUsedInThisRequest = countTokens(aiResponse || ""); //PENDING...
+    const tokensUsedInThisRequest = countTokens(aiResponse || "");
+    const totalTokens = tokensUsedInThisRequest + count;
+    console.log("Total tokens : " + totalTokens);
 
     //Update
-    Subscription.updateOne(
-      { user: "67962901935d078e1488921f" }, //Replace with Id
-      { $inc: { tokenUsed: tokensUsedInThisRequest } }
+    await Subscription.updateOne(
+      { user: "67962901935d078e1488921f" }, // Replace with actual user ID
+      {
+        $inc: {
+          tokenUsed: totalTokens, // Increment tokenUsed
+          tokenLimit: -totalTokens // Decrement tokenLimit
+        }
+      }
     );
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
@@ -167,28 +182,3 @@ export async function POST(req: NextRequest) {
     }
   }
 }
-
-// function cleanJsonResponse(response: string) {
-//   try {
-//     response = response.replace(/([a-zA-Z0-9_]+)(?=\s*[:\s{])/g, '"$1"');
-
-//     // Enclose string values in quotes if they are not already
-//     response = response.replace(/:\s*([A-Za-z0-9_\-]+)(?=\s*[\},])/g, ':"$1"');
-
-//     // Add missing quotes for percentage values
-//     response = response.replace(/(\d+)%/g, '"$1%"');
-
-//     // Add missing quotes around string values that are not quoted
-//     response = response.replace(
-//       /:([\s]*)([A-Za-z0-9_\-\s]+)(?=[\},])/g,
-//       ':"$2"'
-//     );
-
-//     // Remove any trailing commas
-//     response = response.replace(/,\s*([\]}])/g, "$1");
-//     return JSON.parse(response);
-//   } catch (err) {
-//     console.error("Failed to parse AI response:", err);
-//     return null;
-//   }
-// }

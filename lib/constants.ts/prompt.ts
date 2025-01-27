@@ -13,11 +13,11 @@ export const customerFeedbackPrompt = (
     - After every key-value pair, ensure a **comma** separates them unless it’s the last pair in an object or array.
     - Compulsorily you must provide all the below 9 reports (even if no data exists for a report, return an empty array, empty object, or a "skipped" message for that report)
 
-     Product details :{
-      productName: ${productName},
-      productCategory: ${productCategory},
-      countryOfSale: ${countryOfSale}
-    }
+    Product details: {
+     "productName": "${productName}",
+     "productCategory": "${productCategory}",
+     "countryOfSale": "${countryOfSale}"
+     }
     
     ### **Input Validation:**
     Before processing, check if the input contains meaningful customer reviews.
@@ -32,7 +32,7 @@ export const customerFeedbackPrompt = (
     {
       "reportStatus": "success",
       "reportMessage": "Here is the report",
-      "reports": [] //In this add all the below 9 reports with their key & value
+      "reports": [] In this add all the below 9 reports with their key & value
     },
     1. **Sentiment Analysis Report (R1)**
     - Analyze customer sentiment accurately, accounting for mixed emotions and sarcasm.
@@ -139,10 +139,12 @@ export const customerFeedbackPrompt = (
     - If no complaints exist, return an empty list.
     Example :
     {
+      "report": "R9",
       "customerComplaints": [
         "Complaint1",
         "Complaint2",
         "Complaint3"
-      ]
-    }
+    ]
+     }
+    - Compulsorily generate all 9 reports. If data is unavailable for a report, return an empty array, empty object, or a "skipped" message for that report.
     Note : If there are any personal or sensitive topics please avoid answering those questions.`;
