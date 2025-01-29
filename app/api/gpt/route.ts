@@ -7,6 +7,7 @@ import { isCleanText, removeEmojis } from "@/utils/isCleanText";
 import Subscription from "@/models/Subscription";
 import connectDB from "@/lib/database";
 // import { customerFeedbackPrompt } from "@/lib/constants.ts/prompt";
+import { promptBatch01, promptBatch02, promptBatch03, promptBatch04 } from "@/lib/constants.ts/prompt";
 import { z } from "zod";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
