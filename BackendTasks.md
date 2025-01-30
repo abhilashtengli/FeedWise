@@ -2,7 +2,8 @@
 
 ## Note
  - Need to add langchain to build feedwise 
-## 1. Add the extra reports which are not dependent on the external data
+## 1. Add the extra reports which are not dependent on the external data //Done......
+
 - For this I need to make seperate 4 prompt in the each batch then retrivew them and process
  
  Such as :
