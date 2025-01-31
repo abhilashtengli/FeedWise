@@ -14,6 +14,8 @@ import {
 } from "@/lib/constants.ts/prompt";
 import { z } from "zod";
 
+//Implement the prompts one by one (figure out)
+
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
 const validInput = z.object({
   productName: z.string(),
@@ -102,11 +104,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const prompt = customerFeedbackPrompt(
-      productName,
-      productCategory,
-      countryOfSale
-    );
+    // const prompt = customerFeedbackPrompt(
+    //   productName,
+    //   productCategory,
+    //   countryOfSale
+    // );
 
     const response = await openai.chat.completions.create({
       model: "gpt-4",
