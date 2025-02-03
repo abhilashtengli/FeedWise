@@ -167,7 +167,7 @@
 //    - Check for meaningful English text in input
 //    - Verify presence of actual product-related feedback
 //    - Detect and flag gibberish/irrelevant data
-//    If the input lacks valid feedback (e.g., random characters, empty text, gibberish or irrelevant data), 
+//    If the input lacks valid feedback (e.g., random characters, empty text, gibberish or irrelevant data),
 //     return:
 //     {
 //       "reportStatus": "error",
@@ -185,6 +185,15 @@
 // const footerPrompt = `
 //     - Compulsorily generate all the above 3 reports. If data is unavailable for a report, return an empty array, empty object, or a "skipped" message for that report.
 //     - If there are any personal or sensitive topics please avoid answering those questions.`;
+
+const promptJsonValidation = `
+**STRICT JSON STRUCTURE**:
+1. ALL objects/arrays must use SINGLE-LINE format
+2. NO line breaks between properties
+3. NO indentation anywhere
+4. ONE space after colons
+5. Keep quotes consistent
+`;
 
 export const promptBatch01 = (
   productName: string,
@@ -245,6 +254,7 @@ export const promptBatch01 = (
 - Validation:
   ↳ Exclude non-product related topics
   ↳ Merge similar categories (e.g., "packaging" + "box condition")
+  ↳ percentages represent relative weight of TOP topics only (sum may be <100%)
     Example :
      {
       "report": "R2",
@@ -307,46 +317,14 @@ export const promptBatch01 = (
 3. Empty arrays for missing data
 4. Percentages as strings with "%"
 5. Error if <3 meaningful reviews
+6. Validate with JSONLint before responding
+7. Avoid special characters (&, <, >) in topic names
 
+${promptJsonValidation}
 Product Context:
 ${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
+\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING
 `;
-// export const promptBatch02 = `
-//  "${mainPrompt}
-//   1. **Customer Satisfaction Score (R4)**
-//     - Calculate a satisfaction score from valid ratings and feedback.
-//     Example :
-//     {
-//       "report": "R4",
-//       "SatisfactionScore": "8.1/10"
-//     }
-//   2. **Trend Analysis Report (R5)**
-//     - Identify trending positive and negative feedback.
-//     Example :
-//     {
-//       "report": "R5",
-//       "trendingPositive": [
-//         {"Customers love the new design": "15%"},
-//         {"Customers satisfied with packaging": "46%"}
-//       ],
-//       "trendingNegative": [
-//         {"Delivery delays have increased complaints": "8%"},
-//         {"Too expensive": "14%"}
-//       ]
-//     }
-//   3. **Response Strategy Development (R6)**
-//     - Provide response strategies for negative, neutral, and positive reviews.
-//     Example :
-//     {
-//       "report": "R6",
-//       "RecommendedActions": {
-//         "negativeReviews": "Apologize, offer compensation, and improve issue resolution speed.",
-//         "positiveReviews": "Encourage customer advocacy & referrals.",
-//         "neutralReviews": "Seek more feedback to understand concerns."
-//       }
-//     }
-//         "${footerPrompt}"
-// `;
 
 export const promptBatch02 = (
   productName: string,
@@ -483,56 +461,12 @@ export const promptBatch02 = (
 4. All percentage values as strings
 5. Empty arrays for missing trend categories
 
+${promptJsonValidation}
+
 Product Context:
-${JSON.stringify(
-  {
-    productName,
-    productCategory,
-    countryOfSale
-  },
-  null,
-  2
-)}
+${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
+\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING
 `;
-
-// export const promptBatch03 = `
-// "${mainPrompt}"
-//   1. **Customer Complaints List (R7)**
-//     - Generate a list of specific customer complaints  (maximum 5).
-//     - If no complaints exist, return an empty list.
-//     Example :
-//     {
-//       "report": "R7",
-//       "customerComplaints": [
-//         "Complaint1",
-//         "Complaint2",
-//         "Complaint3"
-//     ]
-//      }
-//  2.  ** Feature Request Analysis (R8)**
-//  -  Identify features or improvements requested by customers.
-//  Example :
-//  {
-//    "report": "R8",
-//    "featureRequests": [
-//      {"feature": "Larger package size", "percentage": "25%"},
-//      {"feature": "More flavor options", "percentage": "18%"}
-//    ]
-//    }
-//  3. **Emotional Tone Analysis (R9)**
-//  Analyze the emotional tone of the feedback (e.g., happy, frustrated, disappointed).
-//   Example :
-//   {
-//    "report": "R9",
-//    "emotionalTone": [
-//      {"tone": "Happy", "percentage": "65%"},
-//      {"tone": "Frustrated", "percentage": "20%"},
-//      {"tone": "Disappointed", "percentage": "15%"}
-//    ]
-//  }
-//      "${footerPrompt}"
-// `;
-
 
 export const promptBatch03 = (
   productName: string,
@@ -653,14 +587,9 @@ export const promptBatch03 = (
 4. Empty arrays if no valid data
 5. Max 5 complaints listed
 
+${promptJsonValidation}
+
 Product Context:
-${JSON.stringify(
-  {
-    productName,
-    productCategory,
-    countryOfSale
-  },
-  null,
-  2
-)}
+${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
+\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING
 `;

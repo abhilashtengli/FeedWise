@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import openai from "@/lib/openai";
 import { countTokens } from "@/utils/tokenizer";
 import { isValidText } from "@utils/isValidText";
 import { isCleanText, removeEmojis } from "@/utils/isCleanText";
@@ -10,9 +9,11 @@ import connectDB from "@/lib/database";
 import {
   promptBatch01,
   promptBatch02,
-  promptBatch03,
+  promptBatch03
 } from "@/lib/constants.ts/prompt";
 import { z } from "zod";
+import { analyseFeedback } from "@/lib/analyseFeedback";
+// import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
 //Implement the prompts one by one (figure out)
 
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
     }).select("tokenUsed tokenLimit");
 
     console.log(
-      "USed : " +
+      "Used : " +
         subDetails.tokenUsed +
         " " +
         "Limit : " +
@@ -104,55 +105,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // const prompt = customerFeedbackPrompt(
-    //   productName,
-    //   productCategory,
-    //   countryOfSale
-    // );
+    const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
+    console.log("Prompt1: " + prompt1);
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        { role: "system", content: prompt },
-        { role: "user", content: cleanedReviews }
-      ],
-      temperature: 0.7,
-      max_tokens: 1300,
-      frequency_penalty: 0.5
-    });
-    if (
-      !response.choices ||
-      !response.choices[0]?.message?.content ||
-      typeof response.choices[0].message.content !== "string"
-    ) {
-      return NextResponse.json({
-        message:
-          "OpenAI API returned an unexpected response. Please try again later.",
-        error: "Invalid or missing content in OpenAI response"
-      });
-    }
-
-    //Get response
-    const aiResponse = response.choices[0].message.content.trim();
-
-    console.log("Response : " + aiResponse);
-
-    // let parsedResponse;
-
-    // try {
-    //   const cleanedResponse = cleanJsonResponse(aiResponse);
-
-    //   parsedResponse = cleanedResponse;
-    // } catch (err) {
-    //   console.error("Failed to parse AI response:", err);
-    //   return NextResponse.json({
-    //     message: "Failed to parse AI response",
-    //     error: err
-    //   });
-    // }
+    const response = await analyseFeedback(prompt1, cleanedReviews);
+    console.log("Response : ", response);
+    // const formattedResponse = normalizeAIResponse(response || "");
+    // console.log("formattedResponse : ", formattedResponse);
 
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    const tokensUsedInThisRequest = countTokens(aiResponse || "");
+    const tokensUsedInThisRequest = countTokens(response || "");
     const totalTokens = tokensUsedInThisRequest + count;
     console.log("Total tokens : " + totalTokens);
 
@@ -168,7 +130,7 @@ export async function POST(req: NextRequest) {
     );
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
-      data: aiResponse,
+      data: response,
       message: "Successfull",
       TokenCount: count
     });
