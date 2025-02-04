@@ -1,6 +1,10 @@
 import openai from "@/lib/openai";
+import { AnalysisResponse } from "@/types/AnalysisReport";
 // Modified lib function
-export async function analyseFeedback(prompt: string, cleanedReviews: string) {
+export async function analyseFeedback(
+  prompt: string,
+  cleanedReviews: string
+): Promise<AnalysisResponse | null> {
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -17,10 +21,18 @@ export async function analyseFeedback(prompt: string, cleanedReviews: string) {
       throw new Error("Invalid OpenAI response structure");
     }
 
-    return response.choices[0].message.content.trim();
+    const analysisContent = response.choices[0].message.content.trim();
+        let parsed;
+    try {
+      parsed = JSON.parse(analysisContent);
+    } catch (error) {
+      console.error("Failed to parse response content:", analysisContent,error);
+      return null; // Return null if parsing fails
+    }
+
+    return parsed; 
   } catch (error) {
     console.error("OpenAI API Error:", error);
     return null;
   }
 }
-

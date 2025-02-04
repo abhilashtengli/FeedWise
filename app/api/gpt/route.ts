@@ -13,9 +13,8 @@ import {
 } from "@/lib/constants.ts/prompt";
 import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
+import { AnalysisResponse } from "@/types/AnalysisReport";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
-
-//Implement the prompts one by one (figure out)
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
 const validInput = z.object({
@@ -105,16 +104,20 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const prompt1 = promptBatch03(productName, productCategory, countryOfSale);
+    // Here loop all 3 batches and save each bath report in the Database.
+    //FROM HERE  :
+    const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
     console.log("Prompt1: " + prompt1);
 
-    const response = await analyseFeedback(prompt1, cleanedReviews);
+    const response = (await analyseFeedback(
+      prompt1,
+      cleanedReviews
+    )) as AnalysisResponse;
+
     console.log("Response : ", response);
-    // const formattedResponse = normalizeAIResponse(response || "");
-    // console.log("formattedResponse : ", formattedResponse);
 
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    const tokensUsedInThisRequest = countTokens(response || "");
+    const tokensUsedInThisRequest = countTokens(response.toString());
     const totalTokens = tokensUsedInThisRequest + count;
     console.log("Total tokens : " + totalTokens);
 
@@ -128,6 +131,28 @@ export async function POST(req: NextRequest) {
         }
       }
     );
+    // Save batch-1 data
+
+    if (response?.reportStatus === "success") {
+      const reportData = {
+        user: "67962901935d078e1488921f", // Replace with actual user ID
+        productName,
+        productCategory,
+        countryOfSale,
+        reportStatus: response.reportStatus,
+        reportMessage: response.reportMessage,
+        report: {
+          positive: response.reports[0]?.positive || "",
+          neutral: response.reports[0]?.neutral || "",
+          negative: response.reports[0]?.negative || "",
+          mostMentionedTopics: response.reports[1]?.mostMentionedTopics || [],
+          suggestions: response.reports[2]?.suggestions || []
+          // Add any other report sections based on the structure of your response
+        }
+      };
+    }
+    // TILL HERE
+
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
     return NextResponse.json({
       data: response,

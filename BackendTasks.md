@@ -64,3 +64,40 @@
    - reports in the each batch 
    - save each reports in the db and then move for further processing ( Create a schema to save the report details mapping with the userId)
    - Get the all data a send it in the response
+
+
+ ## Batch 1 Output
+  ```json
+  {
+  "reportStatus": "success",
+  "reportMessage": "Analysis completed successfully",
+  "reports": [
+    {
+      "report": "R1",
+      "positive": "80%",
+      "neutral": "10%",
+      "negative": "10%"
+    },
+    {
+      "report": "R2",
+      "mostMentionedTopics": [
+        {"topic":"Product quality", "percentage":"35%"},
+        {"topic":"Effectiveness", "percentage":"30%"},
+        {"topic":"Price", "percentage":"20%"},
+        {"topic":"Packaging",   "percentage":"15%"}
+      ]
+    },
+    {
+        "report":"R3",
+        "suggestions":["Improve the packaging quality","Ensure product effectiveness","Reevaluate product pricing"]
+     }
+   ]
+}
+```
+
+
+  ## Batch 3 output 
+
+   ```json
+   Response :  {"reportStatus": "success", "reportMessage": "Operational insights generated", "reports": [{"report": "R7", "customerComplaints": ["Overpriced when compared to others.", "PLease improve the packaging quality", "product is not that good and uneffective as i felt"]}, {"report": "R8", "featureRequests": [{"feature": "Better packaging quality", "percentage": "10%"}, {"feature": "Lower price", "percentage": "10%"}, {"feature": "Improved product effectiveness", "percentage": "10%"}]}, {"report": "R9",  "emotionalTone": [{"tone": "Joy",  "percentage":"55%" }, {"tone" :"Trust","percentage":"20%" },{"tone" :"Fear","percentage":"0%"}, {"tone" :"Surprise","percentage":"5%" },{"tone" :"Sadness","percentage":"5%" },{"tone" :"Disgust","percentage":"0%" },{"tone" :"Anticipation","percentage":"15%"}]}]}
+   ```
