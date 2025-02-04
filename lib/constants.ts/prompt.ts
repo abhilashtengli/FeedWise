@@ -1,191 +1,3 @@
-// export const customerFeedbackPrompt = (
-//   productName: string,
-//   productCategory: string,
-//   countryOfSale: string
-// ) => `
-//     Act as **Customer Feedback Analyst** expert and Your task is to analyze bulk customer reviews and generate structured reports in JSON format.
-
-//     ### **Important Guidelines**:
-//     - Ensure all **property names** and **values** are enclosed in **double quotes**.
-//     - JSON **must be valid**. Make sure there are **no trailing commas**.
-//     - If a key is a string, it must be wrapped in double quotes.
-//     - If a value is a string, it must also be wrapped in double quotes.
-//     - After every key-value pair, ensure a **comma** separates them unless it’s the last pair in an object or array.
-//     - Compulsorily you must provide all the below 9 reports (even if no data exists for a report, return an empty array, empty object, or a "skipped" message for that report)
-
-//     Product details: {
-//      "productName": "${productName}",
-//      "productCategory": "${productCategory}",
-//      "countryOfSale": "${countryOfSale}"
-//      }
-
-//     ### **Input Validation:**
-//     Before processing, check if the input contains meaningful customer reviews.
-//     If the input lacks valid feedback (e.g., random characters, empty text, gibberish or irrelevant data), return:
-//     {
-//       "reportStatus": "error",
-//       "reportMessage": "Invalid input. Please provide actual customer reviews for analysis.",
-//       "reports": null
-//     }
-//     ### **Reports to Generate (if input is valid):**
-//     - If the input is valid, generate reports in JSON format as follows:
-//     {
-//       "reportStatus": "success",
-//       "reportMessage": "Here is the report",
-//       "reports": [] In this add all the below 9 reports with their key & value
-//     },
-//     1. **Sentiment Analysis Report (R1)**
-//     - Analyze customer sentiment accurately, accounting for mixed emotions and sarcasm.
-//     - Provide percentages of positive, neutral, and negative sentiments.
-//      Example :
-//     {
-//       "report": "R1",
-//       "positive": "62%",
-//       "neutral": "25%",
-//       "negative": "13%"
-//     }
-//     2. **Key Themes and Topics Extraction (R2)**
-//     - Extract most mentioned topics based on predefined categories (e.g., product features, pricing, delivery or can be anything valid topics).
-//     - Include only topics with at least 5% occurrence.
-//     Example :
-//      {
-//       "report": "R2",
-//       "mostMentionedTopics": [
-//         {"topic": "Topic name", "percentage": "45%"},
-//         {"topic": "Topic name", "percentage": "30%"},
-//       ]
-//     }
-//     3. **Improvement Suggestions Report (R3)**
-//     - Generate actionable suggestions linked to recurring complaints (e.g., mentioned by at least 10% of reviews).
-//     Example :
-//     {
-//       "report": "R3",
-//       "suggestions": [
-//         "Improve delivery speed",
-//         "Offer better post-purchase support",
-//         "Enhance product durability"
-//       ]
-//     }
-//     4. **Comparative Analysis Report (R4)**
-//     - Highlight product ratings and strengths/weaknesses compared to competitors if external data is provided
-//     - If competitor data is unavailable for the product, use market averages based on external sources.
-//     - If competitor data is completely unavailable for the product then give the response as :
-//       {
-//         "report": "R4",
-//         "message": "Comparative data unavailable. Report skipped."
-//        }
-//     Example :
-//     {
-//       "report": "R4",
-//       "myProductRating": 4.2,
-//       "overAllCompetitorRating": 4.5,
-//       "MyProductStrengths": ["Better quality", "User-friendly design"],
-//       "NeedsImprovement": ["Pricing slightly higher than competitors", "Better packaging"]
-//     }
-
-//     5. **Customer Satisfaction Score (R5)**
-//     - Calculate a satisfaction score from valid ratings and feedback.
-//     Example :
-//     {
-//       "report": "R5",
-//       "SatisfactionScore": "8.1/10"
-//     }
-//     6. **Trend Analysis Report (R6)**
-//     - Identify trending positive and negative feedback.
-//     Example :
-//     {
-//       "report": "R6",
-//       "trendingPositive": [
-//         {"Customers love the new design": "15%"},
-//         {"Customers satisfied with packaging": "46%"}
-//       ],
-//       "trendingNegative": [
-//         {"Delivery delays have increased complaints": "8%"},
-//         {"Too expensive": "14%"}
-//       ]
-//     }
-//     7. **Competitive Benchmarking Report (R7)**
-//     - Compare product ratings and performance with market averages.
-//     - If competitor data is completely unavailable for the product then give the response as :
-//       {
-//         "report": "R4",
-//         "message": "Comparative data unavailable. Report skipped."
-//        }
-//       else
-//     Example :
-//     {
-//       "report": "R7",
-//       "marketAvgRating": "4.0/5",
-//       "yourProduct": "4.2/5",
-//       "points": [
-//         "You are **above average** in product quality",
-//         "Below competitors in **customer service response time**"
-//       ]
-//     }
-//     8. **Response Strategy Development (R8)**
-//     - Provide response strategies for negative, neutral, and positive reviews.
-//     Example :
-//     {
-//       "report": "R8",
-//       "RecommendedActions": {
-//         "negativeReviews": "Apologize, offer compensation, and improve issue resolution speed.",
-//         "positiveReviews": "Encourage customer advocacy & referrals.",
-//         "neutralReviews": "Seek more feedback to understand concerns."
-//       }
-//     }
-//     9. **Customer Complaints List (R9)**
-//     - Generate a list of specific customer complaints  (maximum 5).
-//     - If no complaints exist, return an empty list.
-//     Example :
-//     {
-//       "report": "R9",
-//       "customerComplaints": [
-//         "Complaint1",
-//         "Complaint2",
-//         "Complaint3"
-//     ]
-//      }
-//     - Compulsorily generate all 9 reports. If data is unavailable for a report, return an empty array, empty object, or a "skipped" message for that report.
-//     - If there are any personal or sensitive topics please avoid answering those questions.`;
-
-// You are an AI Feedback Assistant with START, PLAN, ACTION, observation and output State
-// // Wait for the user feedbacks
-// const mainPrompt = (
-//   productName: string,
-//   productCategory: string,
-//   countryOfSale: string
-// ) =>
-//   `
-//   **ROLE**: AI Feedback Assistant
-//   **TASK**: Analyze customer reviews through structured thinking process
-
-//   # START: Initialization
-// 1. **Task Acknowledgement**:
-//    "I will analyze customer feedback for ${productName} (${productCategory}) sold in ${countryOfSale} through systematic processing"
-
-// 2. **Input Validation**:
-//    - Check for meaningful English text in input
-//    - Verify presence of actual product-related feedback
-//    - Detect and flag gibberish/irrelevant data
-//    If the input lacks valid feedback (e.g., random characters, empty text, gibberish or irrelevant data),
-//     return:
-//     {
-//       "reportStatus": "error",
-//       "reportMessage": "Invalid input. Please provide actual customer reviews for analysis.",
-//       "reports": null
-//     }
-//     ### **Reports to Generate (if input is valid):**
-//     - If the input is valid, generate reports in JSON format as follows:
-//     {
-//       "reportStatus": "success",
-//       "reportMessage": "Here is the report",
-//       "reports": [] In this add all the reports with their key & value
-//     },`;
-
-// const footerPrompt = `
-//     - Compulsorily generate all the above 3 reports. If data is unavailable for a report, return an empty array, empty object, or a "skipped" message for that report.
-//     - If there are any personal or sensitive topics please avoid answering those questions.`;
-
 const promptJsonValidation = `
 **STRICT JSON STRUCTURE**:
 1. ALL objects/arrays must use SINGLE-LINE format
@@ -193,6 +5,7 @@ const promptJsonValidation = `
 3. NO indentation anywhere
 4. ONE space after colons
 5. Keep quotes consistent
+6. ENSURE the response includes ALL reports without truncation.
 `;
 
 export const promptBatch01 = (
@@ -460,6 +273,11 @@ export const promptBatch02 = (
 3. Strategies must be executable within 30 days
 4. All percentage values as strings
 5. Empty arrays for missing trend categories
+6. NEVER use parentheses () in JSON keys
+7. ALWAYS use concrete values - NO placeholder text (<...>)
+8. Replace template text with actual analyzed data
+9. Remove empty examples from final output
+10. Use only exact keys from required format
 
 ${promptJsonValidation}
 
@@ -500,7 +318,7 @@ export const promptBatch03 = (
   c. Prioritize most frequent
 - Validation:
   ↳ Exclude general dissatisfaction statements
-  ↳ Require specific product references
+  ↳ Complaints must reference a specific product aspect (e.g., 'Battery drains fast' vs. 'Bad product')
 
   Example:
   {
@@ -516,10 +334,18 @@ export const promptBatch03 = (
 - Process:
   a. Identify improvement suggestions
   b. Group semantically similar requests
-  c. Calculate cluster percentages
+  c. Calculate percentage as : (mentions of feature request / total valid feedback) x 100
+  d. Do NOT normalize percentages to sum to 100%
+  e. Each feature's percentage is independent of others
 - Validation:
   ↳ Exclude non-feature comments
   ↳ Merge regional variants (e.g., "colour" vs "color")
+  ↳ Percentages should reflect actual frequency in the dataset
+  ↳ If a feature is mentioned 10 times out of 100 reviews, its percentage is 10%
+  ↳ If:- Total reviews = 100
+       - "Wireless charging" mentioned 12 times → 12%
+       - "Better battery" mentioned 8 times → 8%
+       - "Larger screen" mentioned 5 times → 5%
 
   Example:
   {
@@ -532,11 +358,12 @@ export const promptBatch03 = (
 
 ## STEP 9: Emotional Tone (R9)
 - Process:
-  a. Detect 8 core emotions (Joy, Trust, Fear, etc.)
+  a. Detect and report all 8 core emotions (Joy, Trust, Fear, Surprise, Anger, Disgust, Sadness, Anticipation)
   b. Calculate emotion intensity levels
   c. Aggregate dominant emotions
 - Validation:
   ↳ Flag cultural expression differences
+  ↳ If an emotion is not present, explicitly set "percentage": "0%" instead of omitting it.
   ↳ Verify with sentiment cross-check
 
   Example:
@@ -591,5 +418,5 @@ ${promptJsonValidation}
 
 Product Context:
 ${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
-\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING
+\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING. Validate response length to ensure all required sections (R7, R8, R9) are fully included
 `;

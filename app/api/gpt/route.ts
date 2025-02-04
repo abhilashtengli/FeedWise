@@ -98,14 +98,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    if (count + subDetails.tokenUsed > subDetails.tokenLimit) {
+    if (count > subDetails.tokenLimit) {
       return NextResponse.json({
         message:
           "Your request exceeds the token limit . Please Upgrade your free tier plan."
       });
     }
 
-    const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
+    const prompt1 = promptBatch03(productName, productCategory, countryOfSale);
     console.log("Prompt1: " + prompt1);
 
     const response = await analyseFeedback(prompt1, cleanedReviews);
