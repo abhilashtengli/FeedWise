@@ -14,6 +14,8 @@ import {
 import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
 import { AnalysisResponse } from "@/types/AnalysisReport";
+import Report from "@/models/Reports";
+import { jsonSchemaB1 } from "@/lib/constants.ts/jsonSchema";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
@@ -111,7 +113,8 @@ export async function POST(req: NextRequest) {
 
     const response = (await analyseFeedback(
       prompt1,
-      cleanedReviews
+      cleanedReviews,
+      jsonSchemaB1
     )) as AnalysisResponse;
 
     console.log("Response : ", response);
@@ -150,7 +153,11 @@ export async function POST(req: NextRequest) {
           // Add any other report sections based on the structure of your response
         }
       };
+      const newReport = new Report(reportData);
+      newReport.save();
+      console.log("Data saved successfully to the database :", reportData);
     }
+
     // TILL HERE
 
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
