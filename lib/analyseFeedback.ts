@@ -69,7 +69,7 @@ export async function analyseFeedback(
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       response_format: {
-        type: "json_schema",
+        type: "json_object",
         json_schema: jsonSchemaB1
       },
       messages: [
