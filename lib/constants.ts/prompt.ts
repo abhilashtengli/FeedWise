@@ -47,18 +47,12 @@ export const promptBatch01 = (
   - Process: 
   a. Analyze each review with emotion detection
   b. Categorize as Positive/Neutral/Negative
-  c. Calculate percentages with confidence scores
+  c. Do not add explanations, examples, or extra text in percentage values  
+  d. Calculate percentages with confidence scores
   - Validation:
-  ↳ If <10 reviews, flag as "Insufficient data"
   ↳ Verify sentiment consistency across similar phrases
-  ↳ Sum must be 100% ±2%
-     Example :
-    {
-      "report": "R1",
-      "positive": "62%",
-      "neutral": "25%",
-      "negative": "13%"
-    }
+  ↳ Sum must be 98% ±2%
+    
  ## STEP 2: Theme Extraction (R2)
 - Process:
   a. Identify noun phrases and action verbs
@@ -68,14 +62,7 @@ export const promptBatch01 = (
   ↳ Exclude non-product related topics
   ↳ Merge similar categories (e.g., "packaging" + "box condition")
   ↳ percentages represent relative weight of TOP topics only (sum may be <100%)
-    Example :
-     {
-      "report": "R2",
-      "mostMentionedTopics": [
-        {"topic": "Topic name", "percentage": "45%"},
-        {"topic": "Topic name", "percentage": "30%"},
-      ]
-    }
+ 
  ## STEP 3: Improvement Suggestions (R3)
 - Process:
   a. Map complaints to potential solutions
@@ -84,59 +71,15 @@ export const promptBatch01 = (
 - Validation:
   ↳ Exclude suggestions requiring personal data
   ↳ Ensure technical feasibility
-    Example :
-    {
-      "report": "R3",
-      "suggestions": [
-        "Improve delivery speed",
-        "Offer better post-purchase support",
-        "Enhance product durability"
-      ]
-    }
+  
 
 # OBSERVATION: Quality Check
-- Verify JSON syntax with online validator
-- Confirm all percentages sum to 100% ±2% margin
+- Verify JSON syntax 
+- Confirm all percentages sum to 98% ±2% margin
 - Check for country-specific cultural factors
-- Note any skipped reports with reasons
 
-# OUTPUT STATE: Final Generation
-**REQUIRED FORMAT**: (You must strictly follow the Json Output format)
-{
-  "reportStatus": "success"|"error",
-  "reportMessage": "Status details",
-  "reports":  [
-    {
-      "report": "R1",
-      "positive": "62%",
-      "neutral": "25%",
-      "negative": "13%"
-    },
-    {
-      "report": "R2",
-      "mostMentionedTopics": [
-        {"topic": "Text", "percentage": "X%"}
-      ]
-    },
-    {
-      "report": "R3",
-      "suggestions": ["Text"]
-    }
-  ]
-}
-  **STRICT RULES**:
-1. All strings double-quoted
-2. No trailing commas
-3. Empty arrays for missing data
-4. Percentages as strings with "%"
-5. Error if <3 meaningful reviews
-6. Validate with JSONLint before responding
-7. Avoid special characters (&, <, >) in topic names
-
-${promptJsonValidation}
 Product Context:
 ${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
-\n\nRETURN ONLY THE JSON OUTPUT FROM # OUTPUT STATE. NO MARKDOWN. NO CODE BLOCKS. NO EXPLANATIONS. NO OTHER TEXT. STRICTLY FOLLOW THE REQUIRED FORMAT. VALIDATE JSON SYNTAX BEFORE RESPONDING
 `;
 
 export const promptBatch02 = (

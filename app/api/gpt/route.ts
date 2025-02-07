@@ -110,11 +110,11 @@ export async function POST(req: NextRequest) {
     //FROM HERE  :
     const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
     console.log("Prompt1: " + prompt1);
-
+    const jsonSchema = "jsonSchemaB1";
     const response = (await analyseFeedback(
       prompt1,
       cleanedReviews,
-      jsonSchemaB1
+      jsonSchema
     )) as AnalysisResponse;
 
     console.log("Response : ", response);
