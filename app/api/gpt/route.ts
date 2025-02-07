@@ -153,14 +153,16 @@ export async function POST(req: NextRequest) {
           // Add any other report sections based on the structure of your response
         }
       };
-      const newReport = new Report(reportData);
-      newReport.save();
+      // const newReport = new Report(reportData);
+      // newReport.save();
       console.log("Data saved successfully to the database :", reportData);
     }
 
     // TILL HERE
 
     // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
+    console.log(typeof response === "string");
+
     return NextResponse.json({
       data: response,
       message: "Successfull",

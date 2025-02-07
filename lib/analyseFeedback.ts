@@ -66,11 +66,70 @@ export async function analyseFeedback(
   }
 ): Promise<AnalysisResponse | null> {
   try {
+    console.log({ ...jsonSchemaB1 });
+
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-4o",
       response_format: {
-        type: "json_object",
-        json_schema: jsonSchemaB1
+        type: "json_schema",
+        json_schema: {
+          name: "Feedback_analyser01",
+          schema: {
+            type: "object",
+            properties: {
+              reportStatus: { type: "string", enum: ["success", "error"] },
+              reportMessage: { type: "string" },
+              reports: {
+                type: "array",
+                items: {
+                  type: "object",
+                  oneOf: [
+                    {
+                      properties: {
+                        report: { type: "string", enum: ["R1"] },
+                        positive: { type: "string", pattern: "^[0-9]+%$" },
+                        neutral: { type: "string", pattern: "^[0-9]+%$" },
+                        negative: { type: "string", pattern: "^[0-9]+%$" }
+                      },
+                      required: ["report", "positive", "neutral", "negative"]
+                    },
+                    {
+                      properties: {
+                        report: { type: "string", enum: ["R2"] },
+                        mostMentionedTopics: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              topic: { type: "string" },
+                              percentage: {
+                                type: "string",
+                                pattern: "^[0-9]+%$"
+                              }
+                            },
+                            required: ["topic", "percentage"]
+                          }
+                        }
+                      },
+                      required: ["report", "mostMentionedTopics"]
+                    },
+                    {
+                      properties: {
+                        report: { type: "string", enum: ["R3"] },
+                        suggestions: {
+                          type: "array",
+                          items: { type: "string" }
+                        }
+                      },
+                      required: ["report", "suggestions"]
+                    }
+                  ]
+                }
+              }
+            },
+            required: ["reportStatus", "reportMessage", "reports"]
+          }
+        }
       },
       messages: [
         { role: "system", content: prompt },
@@ -86,8 +145,9 @@ export async function analyseFeedback(
     }
 
     const analysisContent = response.choices[0].message.content;
+    const response_json = JSON.parse(analysisContent);
 
-    return analysisContent as unknown as AnalysisResponse;
+    return response_json;
   } catch (error) {
     console.error("OpenAI API Error:", error);
     return null;
