@@ -12,9 +12,7 @@ export const promptBatch01 = (
   productName: string,
   productCategory: string,
   countryOfSale: string
-) => `
-
-**ROLE**: AI Feedback Assistant
+) => `**ROLE**: AI Feedback Assistant
   **TASK**: Analyze customer reviews through structured thinking process
 
   # START: Initialization
@@ -33,7 +31,6 @@ export const promptBatch01 = (
       "reports": null
      }
   
-
   # PLAN: Strategy Formulation
   **Processing Blueprint**:
   1. Will perform sentiment analysis (R1) using VADER with sarcasm detection
@@ -47,37 +44,41 @@ export const promptBatch01 = (
   - Process: 
   a. Analyze each review with emotion detection
   b. Categorize as Positive/Neutral/Negative
-  c. Do not add explanations, examples, or extra text in percentage values  
-  d. Calculate percentages with confidence scores
+  c. Calculate percentages **strictly as string values with "%"**  
+  d. Do not add explanations, examples, or extra text in percentage values** 
+  c. Calculate percentages with confidence scores
   - Validation:
   ↳ Verify sentiment consistency across similar phrases
   ↳ Sum must be 98% ±2%
     
- ## STEP 2: Theme Extraction (R2)
-- Process:
+  ## STEP 2: Theme Extraction (R2)
+  - Process:
   a. Identify noun phrases and action verbs
   b. Cluster related terms (e.g., "slow delivery" = "Shipping Speed")
   c. Apply 5% occurrence threshold
-- Validation:
+  d. Calculate percentages **strictly as string values with "%"**    
+  - Validation:
   ↳ Exclude non-product related topics
   ↳ Merge similar categories (e.g., "packaging" + "box condition")
   ↳ percentages represent relative weight of TOP topics only (sum may be <100%)
- 
+   
  ## STEP 3: Improvement Suggestions (R3)
-- Process:
+  - Process:
   a. Map complaints to potential solutions
-  b. Prioritize issues with ≥10% frequency
+  b. Prioritize all issues with 2≥% frequency
   c. Formulate actionable recommendations
-- Validation:
+  - Validation:
   ↳ Exclude suggestions requiring personal data
   ↳ Ensure technical feasibility
-  
 
 # OBSERVATION: Quality Check
-- Verify JSON syntax 
+- Verify JSON syntax with online validator
+- Strictly return only JSON values, without any additional text.
 - Confirm all percentages sum to 98% ±2% margin
 - Check for country-specific cultural factors
+- Note any skipped reports with reasons
 
+${promptJsonValidation}
 Product Context:
 ${JSON.stringify({ productName, productCategory, countryOfSale }, null, 2)}
 `;

@@ -15,7 +15,6 @@ import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
 import { AnalysisResponse } from "@/types/AnalysisReport";
 import Report from "@/models/Reports";
-import { jsonSchemaB1 } from "@/lib/constants.ts/jsonSchema";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
@@ -107,7 +106,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Here loop all 3 batches and save each bath report in the Database.
-    //FROM HERE  :
+    //------------------------------------------------------------------------------------------------
+    //1st batch starts here :
     const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
     console.log("Prompt1: " + prompt1);
     const jsonSchema = "jsonSchemaB1";
@@ -122,7 +122,6 @@ export async function POST(req: NextRequest) {
     //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
     const tokensUsedInThisRequest = countTokens(response.toString());
     const totalTokens = tokensUsedInThisRequest + count;
-    console.log("Total tokens : " + totalTokens);
 
     //Update
     await Subscription.updateOne(
@@ -157,13 +156,101 @@ export async function POST(req: NextRequest) {
       // newReport.save();
       console.log("Data saved successfully to the database :", reportData);
     }
+    // 1st batch ends here
+    // -----------------------------------------------------------------------------------------------
+    //2nd Batch
+    const prompt2 = promptBatch02(productName, productCategory, countryOfSale);
+    console.log("Prompt1: " + prompt1);
+    const jsonSchema = "jsonSchemaB2";
+    const response = (await analyseFeedback(
+      prompt2,
+      cleanedReviews,
+      jsonSchema
+    )) as AnalysisResponse;
 
-    // TILL HERE
+    console.log("Response : ", response);
 
-    // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
-    console.log(typeof response === "string");
+    //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
+    const tokensUsedInThisRequest = countTokens(response.toString());
+    const totalTokens = tokensUsedInThisRequest + count;
 
+    //Update
+    await Subscription.updateOne(
+      { user: "67962901935d078e1488921f" }, // Replace with actual user ID
+      {
+        $inc: {
+          tokenUsed: totalTokens, // Increment tokenUsed
+          tokenLimit: -totalTokens // Decrement tokenLimit
+        }
+      }
+    );
+    // Save batch-1 data
+
+    if (response?.reportStatus === "success") {
+      const reportData = {
+        user: "67962901935d078e1488921f", // Replace with actual user ID
+        productName,
+        productCategory,
+        countryOfSale,
+        reportStatus: response.reportStatus,
+        reportMessage: response.reportMessage,
+        report: {}
+      };
+      // const newReport = new Report(reportData);
+      // newReport.save();
+      console.log("Data saved successfully to the database :", reportData);
+    }
+    // @2nd batch ends here
+    // -----------------------------------------------------------------------------------------------------
+   
+
+    // 3rd batch starts here
+    const prompt1 = promptBatch03(productName, productCategory, countryOfSale);
+    console.log("Prompt1: " + prompt1);
+    const jsonSchema = "jsonSchemaB3";
+    const response = (await analyseFeedback(
+      prompt1,
+      cleanedReviews,
+      jsonSchema
+    )) as AnalysisResponse;
+
+    console.log("Response : ", response);
+
+    //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
+    const tokensUsedInThisRequest = countTokens(response.toString());
+    const totalTokens = tokensUsedInThisRequest + count;
+
+    //Update
+    await Subscription.updateOne(
+      { user: "67962901935d078e1488921f" }, // Replace with actual user ID
+      {
+        $inc: {
+          tokenUsed: totalTokens, // Increment tokenUsed
+          tokenLimit: -totalTokens // Decrement tokenLimit
+        }
+      }
+    );
+    // Save batch-1 data
+
+    if (response?.reportStatus === "success") {
+      const reportData = {
+        user: "67962901935d078e1488921f", // Replace with actual user ID
+        productName,
+        productCategory,
+        countryOfSale,
+        reportStatus: response.reportStatus,
+        reportMessage: response.reportMessage,
+        report: {}
+      };
+      // const newReport = new Report(reportData);
+      // newReport.save();
+      console.log("Data saved successfully to the database :", reportData);
+    }
+    // 3rd batch ends here
+
+    
     return NextResponse.json({
+      // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
       data: response,
       message: "Successfull",
       TokenCount: count
