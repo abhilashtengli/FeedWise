@@ -202,7 +202,6 @@ export async function POST(req: NextRequest) {
     }
     // @2nd batch ends here
     // -----------------------------------------------------------------------------------------------------
-   
 
     // 3rd batch starts here
     const prompt1 = promptBatch03(productName, productCategory, countryOfSale);
@@ -248,7 +247,6 @@ export async function POST(req: NextRequest) {
     }
     // 3rd batch ends here
 
-    
     return NextResponse.json({
       // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
       data: response,
