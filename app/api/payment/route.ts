@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import razorPay from "@/utils/razorpay";
 import mongoose from "mongoose";
-import plans from "@/lib/constants.ts/plans";
+import plans from "@/lib/constants/plans";
 
 const requestBodySchema = z.object({
   planType: z.enum(["paid", "premium"]) // Restrict planType to "paid" or "premium"

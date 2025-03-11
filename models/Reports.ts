@@ -69,7 +69,7 @@ const reportSchema = new mongoose.Schema({
         tone: { type: String },
         percentage: { type: String }
       }
-    ] // For R9
+    ]
   }
 });
 

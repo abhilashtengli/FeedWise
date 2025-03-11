@@ -10,7 +10,7 @@ import {
   promptBatch01,
   promptBatch02,
   promptBatch03
-} from "@/lib/constants.ts/prompt";
+} from "@/lib/constants/prompt";
 import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
 import { AnalysisResponse } from "@/types/AnalysisReport";
