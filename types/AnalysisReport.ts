@@ -1,4 +1,5 @@
 interface ReportDetails {
+  [x: string]: string;
   positive?: string;
   neutral?: string;
   negative?: string;

@@ -15,9 +15,26 @@ import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
 import { AnalysisResponse } from "@/types/AnalysisReport";
 import Report from "@/models/Reports";
+import { Types } from "mongoose";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
+interface ReportData {
+  user: string;
+  productName: string;
+  productCategory: string;
+  countryOfSale: string;
+  reportStatus: string;
+  reportMessage: string;
+  report: {
+    positive?: string;
+    neutral?: string;
+    negative?: string;
+    mostMentionedTopics?: { topic: string; percentage: string }[];
+    suggestions?: string[];
+  };
+}
+
 const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
@@ -25,7 +42,7 @@ const validInput = z.object({
   messages: z.string().min(1, "Reviews must be a non-empty string")
 });
 const userId = "67962901935d078e1488921f"; // Replace with actual user ID
-let newReportId;
+let newReportId: Types.ObjectId;
 
 const batchConfigurations = [
   { promptFunction: promptBatch01, jsonSchema: "jsonSchemaB1" },
@@ -50,29 +67,45 @@ async function saveReport(
   productCategory: string,
   countryOfSale: string
 ) {
-  if (response?.reportStatus === "success") {
-    const reportData = {
+  if (response?.reportStatus === "success" && !newReportId) {
+    // Initialize reportData with required structure
+    const reportData: ReportData = {
       user: userId,
       productName,
       productCategory,
       countryOfSale,
       reportStatus: response.reportStatus,
       reportMessage: response.reportMessage,
-      report: response.reports?.length
-        ? {
-            positive: response.reports[0]?.positive || "",
-            neutral: response.reports[0]?.neutral || "",
-            negative: response.reports[0]?.negative || "",
-            mostMentionedTopics: response.reports[1]?.mostMentionedTopics || [],
-            suggestions: response.reports[2]?.suggestions || []
-          }
-        : {}
+      report: {}
     };
 
+    // Merge reports data
+    if (response.reports?.length) {
+      response.reports.forEach((report) => {
+        if (report.report === "R1") {
+          reportData.report.positive = report.positive || "";
+          reportData.report.neutral = report.neutral || "";
+          reportData.report.negative = report.negative || "";
+        }
+        if (report.report === "R2") {
+          reportData.report.mostMentionedTopics =
+            report.mostMentionedTopics || [];
+        }
+        if (report.report === "R3") {
+          reportData.report.suggestions = report.suggestions || [];
+        }
+      });
+    }
+
+    // Save new report
     const newReport = await new Report(reportData).save();
-    newReportId = newReport._id;
-    console.log("Report saved successfully:", newReport);
+    newReportId = newReport._id; // Store the report ID for further updates
+    console.log("✅ Report saved successfully:", newReport);
     return newReport;
+  }
+
+  if (newReportId) {
+    const existingReport = await Report.findById(newReportId);
   }
   return null;
 }
@@ -88,7 +121,7 @@ async function processBatch(
 ) {
   const { promptFunction, jsonSchema } = batchConfigurations[batchIndex];
   const prompt = promptFunction(productName, productCategory, countryOfSale);
-  console.log(`Batch ${batchIndex + 1} - Generated Prompt:`, prompt);
+  // console.log(`Batch ${batchIndex + 1} - Generated Prompt:`, prompt);
 
   const response = (await analyseFeedback(
     prompt,
@@ -100,13 +133,14 @@ async function processBatch(
   if (response?.reportStatus === "success") {
     const tokensUsed = countTokens(response.toString()) + count;
     await updateTokenUsage(userId, tokensUsed);
-    return await saveReport(
+    const savedReport = await saveReport(
       userId,
       response,
       productName,
       productCategory,
       countryOfSale
     ); // ✅ Return the saved report
+    return savedReport;
   }
 
   return null; // ✅ Explicitly return null if no report was saved
