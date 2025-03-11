@@ -25,6 +25,7 @@ const validInput = z.object({
   messages: z.string().min(1, "Reviews must be a non-empty string")
 });
 const userId = "67962901935d078e1488921f"; // Replace with actual user ID
+let newReportId;
 
 const batchConfigurations = [
   { promptFunction: promptBatch01, jsonSchema: "jsonSchemaB1" },
@@ -68,7 +69,8 @@ async function saveReport(
         : {}
     };
 
-    const newReport = await Report.create(reportData);
+    const newReport = await new Report(reportData).save();
+    newReportId = newReport._id;
     console.log("Report saved successfully:", newReport);
     return newReport;
   }
@@ -167,13 +169,13 @@ export async function POST(req: NextRequest) {
       user: "67962901935d078e1488921f" //Replace with Id
     }).select("tokenUsed tokenLimit");
 
-    console.log(
-      "Used : " +
-        subDetails.tokenUsed +
-        " " +
-        "Limit : " +
-        subDetails.tokenLimit
-    );
+    // console.log(
+    //   "Used : " +
+    //     subDetails.tokenUsed +
+    //     " " +
+    //     "Limit : " +
+    //     subDetails.tokenLimit
+    // );
 
     if (!subDetails) {
       return NextResponse.json({

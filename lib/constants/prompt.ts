@@ -141,8 +141,8 @@ export const promptBatch02 = (
       {"trend": "Eco-friendly packaging", "mentions": "27%"}
     ],
     "trendingNegative": [
-      {"trend": "Battery lifespan", "mentions": "12%"},
-      {"trend": "Mobile app compatibility", "mentions": "9%"}
+      {"trend": "The product is Not good", "mentions": "12%"},
+      {"trend": "Customer service is not that responsive", "mentions": "9%"}
     ]
   }
 

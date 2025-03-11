@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         planType: planType
       }
     });
-    const userId = new mongoose.Types.ObjectId(); // for testing purposes ponly remove after that
+    const userId = new mongoose.Types.ObjectId(); // for testing purposes only remove after that
     const subData = {
       user: userId /*change in production*/,
       plan: planType,
