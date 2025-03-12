@@ -127,8 +127,8 @@ async function saveReport(
     // Save new report
     const newReport = await new Report(reportData).save();
     newReportId = newReport._id.toString();
-    console.log("New Report Id is here : " + newReportId); // Store the report ID for further updates
-    console.log("✅ Batch 1 Report saved successfully:", newReport);
+    // console.log("New Report Id is here : " + newReportId); // Store the report ID for further updates
+    // console.log("✅ Batch 1 Report saved successfully:", newReport);
     return newReport;
   }
 
@@ -136,10 +136,10 @@ async function saveReport(
     return NextResponse.json({ message: "Invalid report ID" });
   }
   if (newReportId) {
-    console.log("Here is the new Id for BATCH 2 and 3 : " + newReportId);
+    // console.log("Here is the new Id for BATCH 2 and 3 : " + newReportId);
     const existingReport = await Report.findById(newReportId);
 
-    console.log("Existing Report : " + existingReport);
+    // console.log("Existing Report : " + existingReport);
     if (!existingReport) {
       return NextResponse.json({
         message: "The Schema for the report is not generated"
@@ -147,65 +147,42 @@ async function saveReport(
     }
     // if (existingReport && response.reports?.length) {
     // Ensure `existingReport.report` is properly initialized
-    async function updateReport() {
-      response.reports.forEach((report) => {
-        // if (report.report === "R4") {
-        //   existingReport.report.satisfactionScore =
-        //     report.satisfactionScore || "";
-        //   existingReport.report.confidenceLevel = report.confidenceLevel || "";
-        // }
-        // if (report.report === "R5") {
-        //   existingReport.report.trendingPositive =
-        //     report.trendingPositive || "";
-        //   existingReport.report.trendingNegative =
-        //     report.trendingNegative || "";
-        // }
-        // if (report.report === "R6") {
-        //   existingReport.report.recommendedActions.negative =
-        //     report.recommendedActions?.negative || "";
-        //   existingReport.report.recommendedActions.neutral =
-        //     report.recommendedActions?.neutral || "";
-        //   existingReport.report.recommendedActions.positive =
-        //     report.recommendedActions?.positive || "";
-        // }
-        // if (report.report === "R7") {
-        //   existingReport.report.customerComplaints =
-        //     report.customerComplaints || "";
-        // }
-        // if (report.report === "R8") {
-        //   existingReport.report.featureRequests = report.featureRequests || "";
-        // }
-        // if (report.report === "R9") {
-        //   existingReport.report.emotionalTone = report.emotionalTone || "";
-        // }
-        await Report.findByIdAndUpdate(
-          newReportId,
-          {
-            $set: {
-              "report.satisfactionScore": report.satisfactionScore || "",
-              "report.confidenceLevel": report.confidenceLevel || "",
-              "report.trendingPositive": report.trendingPositive || [],
-              "report.trendingNegative": report.trendingNegative || [],
-              "report.recommendedActions": report.recommendedActions || {
-                negative: [],
-                neutral: [],
-                positive: []
-              },
-              "report.customerComplaints": report.customerComplaints || [],
-              "report.featureRequests": report.featureRequests || [],
-              "report.emotionalTone": report.emotionalTone || []
-            }
-          },
-          { new: true }
-        );
-      });
-    }
-
-    // Save the updated report
-    // await existingReport.save();
-    // console.log("✅ Batch 2 and 3 Report updated successfully:", newReportId);
-    // }
+    response.reports.forEach((report) => {
+      if (report.report === "R4") {
+        existingReport.report.satisfactionScore =
+          report.satisfactionScore || "";
+        existingReport.report.confidenceLevel = report.confidenceLevel || "";
+      }
+      if (report.report === "R5") {
+        existingReport.report.trendingPositive = report.trendingPositive || "";
+        existingReport.report.trendingNegative = report.trendingNegative || "";
+      }
+      if (report.report === "R6") {
+        existingReport.report.recommendedActions.negative =
+          report.recommendedActions?.negative || "";
+        existingReport.report.recommendedActions.neutral =
+          report.recommendedActions?.neutral || "";
+        existingReport.report.recommendedActions.positive =
+          report.recommendedActions?.positive || "";
+      }
+      if (report.report === "R7") {
+        existingReport.report.customerComplaints =
+          report.customerComplaints || "";
+      }
+      if (report.report === "R8") {
+        existingReport.report.featureRequests = report.featureRequests || "";
+      }
+      if (report.report === "R9") {
+        existingReport.report.emotionalTone = report.emotionalTone || "";
+      }
+    });
+    existingReport.markModified("report"); // ✅ Tell Mongoose that "report" has changed
+    const finalSaved = await existingReport.save();
+    // console.log("✅ Batch 2 and 3 Report updated successfully:", finalSaved);
+    return finalSaved;
   }
+
+  // Save the updated report
 
   return null;
 }
@@ -228,7 +205,7 @@ async function processBatch(
     cleanedReviews,
     jsonSchema
   )) as AnalysisResponse;
-  console.log(`Batch ${batchIndex + 1} - Response:`, response);
+  // console.log(`Batch ${batchIndex + 1} - Response:`, response);
 
   if (response?.reportStatus === "success") {
     const tokensUsed = countTokens(response.toString()) + count;
@@ -324,10 +301,10 @@ export async function POST(req: NextRequest) {
           "Your request exceeds the token limit . Please Upgrade your free tier plan."
       });
     }
-    const savedReports: unknown[] = []; // ✅ Ensure it's an array
 
+    let finalReport = null;
     for (let i = 0; i < batchConfigurations.length; i++) {
-      const report = await processBatch(
+      finalReport = await processBatch(
         i,
         productName,
         productCategory,
@@ -336,12 +313,13 @@ export async function POST(req: NextRequest) {
         userId,
         count
       );
-      if (report) savedReports.push(report);
     }
+
+    console.log("Final Report : " + finalReport);
 
     return NextResponse.json({
       // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
-      data: savedReports,
+      data: finalReport,
       message: "Successfull",
       TokenCount: count
     });
@@ -361,32 +339,4 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "An error Occured", error: error });
     }
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function updateReport(reports: any[], newReportId: string) {
-  for (const report of reports) {
-    await Report.findByIdAndUpdate(
-      newReportId,
-      {
-        $set: {
-          "report.satisfactionScore": report.satisfactionScore || "",
-          "report.confidenceLevel": report.confidenceLevel || "",
-          "report.trendingPositive": report.trendingPositive || [],
-          "report.trendingNegative": report.trendingNegative || [],
-          "report.recommendedActions": report.recommendedActions || {
-            negative: [],
-            neutral: [],
-            positive: []
-          },
-          "report.customerComplaints": report.customerComplaints || [],
-          "report.featureRequests": report.featureRequests || [],
-          "report.emotionalTone": report.emotionalTone || []
-        }
-      },
-      { new: true }
-    );
-  }
-  const updatedReport = await Report.findById(newReportId);
-  return updatedReport;
 }

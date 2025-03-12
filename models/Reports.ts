@@ -29,21 +29,21 @@ const reportSchema = new mongoose.Schema({
   },
   report: {
     type: Object, // ✅ Explicitly define `report` as an object
-    default: {
-      positive: "",
-      neutral: "",
-      negative: "",
-      mostMentionedTopics: [],
-      suggestions: [],
-      satisfactionScore: "",
-      confidenceLevel: "",
-      trendingPositive: [],
-      trendingNegative: [],
-      recommendedActions: { negative: [], neutral: [], positive: [] },
-      customerComplaints: [],
-      featureRequests: [],
-      emotionalTone: []
-    },
+    // default: {
+    //   positive: "",
+    //   neutral: "",
+    //   negative: "",
+    //   mostMentionedTopics: [],
+    //   suggestions: [],
+    //   satisfactionScore: "",
+    //   confidenceLevel: "",
+    //   trendingPositive: [],
+    //   trendingNegative: [],
+    //   recommendedActions: { negative: [], neutral: [], positive: [] },
+    //   customerComplaints: [],
+    //   featureRequests: [],
+    //   emotionalTone: []
+    // },
     properties: {
       positive: { type: String }, // For R1
       neutral: { type: String },
