@@ -19,22 +19,35 @@ import { Types } from "mongoose";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
 //Pending tasks : rate limiting, allow only 15000 tokens per user in free tier
+interface ReportType {
+  positive?: string;
+  neutral?: string;
+  negative?: string;
+  mostMentionedTopics?: { topic: string; percentage: string }[];
+  suggestions?: string[];
+  satisfactionScore?: string;
+  confidenceLevel?: string;
+  trendingPositive?: { trend: string; mentions: string }[];
+  trendingNegative?: { trend: string; mentions: string }[];
+  recommendedActions?: {
+    negative?: string[];
+    neutral?: string[];
+    positive?: string[];
+  };
+  customerComplaints?: string[];
+  featureRequests?: { feature: string; percentage: string }[];
+  emotionalTone?: { tone: string; percentage: string }[];
+}
+
 interface ReportData {
   user: string;
   productName: string;
   productCategory: string;
   countryOfSale: string;
-  reportStatus: string;
+  reportStatus: "success" | "error";
   reportMessage: string;
-  report: {
-    positive?: string;
-    neutral?: string;
-    negative?: string;
-    mostMentionedTopics?: { topic: string; percentage: string }[];
-    suggestions?: string[];
-  };
+  report: ReportType;
 }
-
 const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
@@ -76,7 +89,21 @@ async function saveReport(
       countryOfSale,
       reportStatus: response.reportStatus,
       reportMessage: response.reportMessage,
-      report: {}
+      report: {
+        positive: "",
+        neutral: "",
+        negative: "",
+        mostMentionedTopics: [],
+        suggestions: [],
+        satisfactionScore: "",
+        confidenceLevel: "",
+        trendingPositive: [],
+        trendingNegative: [],
+        recommendedActions: { negative: [], neutral: [], positive: [] },
+        customerComplaints: [],
+        featureRequests: [],
+        emotionalTone: []
+      }
     };
 
     // Merge reports data
@@ -103,10 +130,32 @@ async function saveReport(
     console.log("✅ Report saved successfully:", newReport);
     return newReport;
   }
-
+  if (!newReportId || !Types.ObjectId.isValid(newReportId)) {
+    return NextResponse.json({ message: "Invalid report ID" });
+  }
   if (newReportId) {
     const existingReport = await Report.findById(newReportId);
+    if (!existingReport) {
+      return NextResponse.json({
+        message: "The Schema for the report is not generated"
+      });
+    }
+    if (existingReport && response.reports?.length) {
+      // Ensure `existingReport.report` is properly initialized
+
+      response.reports.forEach((report) => {
+        if (report.report === "R4") {
+          existingReport.report.satisfactionScore =
+            report.satisfactionScore || "";
+        }
+      });
+
+      // Save the updated report
+      await existingReport.save();
+      console.log("✅ Report updated successfully:", newReportId);
+    }
   }
+
   return null;
 }
 
@@ -238,148 +287,6 @@ export async function POST(req: NextRequest) {
       );
       if (report) savedReports.push(report);
     }
-
-    // Here loop all 3 batches and save each bath report in the Database.
-    //------------------------------------------------------------------------------------------------
-    //1st batch starts here :
-    // const prompt1 = promptBatch01(productName, productCategory, countryOfSale);
-    // console.log("Prompt1: " + prompt1);
-    // const jsonSchema = "jsonSchemaB1";
-    // const response = (await analyseFeedback(
-    //   prompt1,
-    //   cleanedReviews,
-    //   jsonSchema
-    // )) as AnalysisResponse;
-
-    // console.log("Response : ", response);
-
-    // //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    // const tokensUsedInThisRequest = countTokens(response.toString());
-    // const totalTokens = tokensUsedInThisRequest + count;
-
-    // //Update
-    // await Subscription.updateOne(
-    //   { user: "67962901935d078e1488921f" }, // Replace with actual user ID
-    //   {
-    //     $inc: {
-    //       tokenUsed: totalTokens, // Increment tokenUsed
-    //       tokenLimit: -totalTokens // Decrement tokenLimit
-    //     }
-    //   }
-    // );
-    // // Save batch-1 data
-
-    // if (response?.reportStatus === "success") {
-    //   const reportData = {
-    //     user: "67962901935d078e1488921f", // Replace with actual user ID
-    //     productName,
-    //     productCategory,
-    //     countryOfSale,
-    //     reportStatus: response.reportStatus,
-    //     reportMessage: response.reportMessage,
-    //     report: {
-    //       positive: response.reports[0]?.positive || "",
-    //       neutral: response.reports[0]?.neutral || "",
-    //       negative: response.reports[0]?.negative || "",
-    //       mostMentionedTopics: response.reports[1]?.mostMentionedTopics || [],
-    //       suggestions: response.reports[2]?.suggestions || []
-    //       // Add any other report sections based on the structure of your response
-    //     }
-    //   };
-    // const newReport = new Report(reportData);
-    // newReport.save();
-    //   console.log("Data saved successfully to the database :", reportData);
-    // }
-    // 1st batch ends here
-    // -----------------------------------------------------------------------------------------------
-    //2nd Batch
-    // const prompt2 = promptBatch02(productName, productCategory, countryOfSale);
-    // console.log("Prompt1: " + prompt1);
-    // const jsonSchema = "jsonSchemaB2";
-    // const response = (await analyseFeedback(
-    //   prompt2,
-    //   cleanedReviews,
-    //   jsonSchema
-    // )) as AnalysisResponse;
-
-    // console.log("Response : ", response);
-
-    // //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    // const tokensUsedInThisRequest = countTokens(response.toString());
-    // const totalTokens = tokensUsedInThisRequest + count;
-
-    // //Update
-    // await Subscription.updateOne(
-    //   { user: "67962901935d078e1488921f" }, // Replace with actual user ID
-    //   {
-    //     $inc: {
-    //       tokenUsed: totalTokens, // Increment tokenUsed
-    //       tokenLimit: -totalTokens // Decrement tokenLimit
-    //     }
-    //   }
-    // );
-    // // Save batch-1 data
-
-    // if (response?.reportStatus === "success") {
-    //   const reportData = {
-    //     user: "67962901935d078e1488921f", // Replace with actual user ID
-    //     productName,
-    //     productCategory,
-    //     countryOfSale,
-    //     reportStatus: response.reportStatus,
-    //     reportMessage: response.reportMessage,
-    //     report: {}
-    //   };
-    //   // const newReport = new Report(reportData);
-    //   // newReport.save();
-    //   console.log("Data saved successfully to the database :", reportData);
-    // }
-    // @2nd batch ends here
-    // -----------------------------------------------------------------------------------------------------
-
-    // 3rd batch starts here
-    // const prompt1 = promptBatch03(productName, productCategory, countryOfSale);
-    // console.log("Prompt1: " + prompt1);
-    // const jsonSchema = "jsonSchemaB3";
-    // const response = (await analyseFeedback(
-    //   prompt1,
-    //   cleanedReviews,
-    //   jsonSchema
-    // )) as AnalysisResponse;
-
-    // console.log("Response : ", response);
-
-    // //Here add the token value only if the reportStatus = "success" **Need to implement still based on the response**
-    // const tokensUsedInThisRequest = countTokens(response.toString());
-    // const totalTokens = tokensUsedInThisRequest + count;
-
-    // //Update
-    // await Subscription.updateOne(
-    //   { user: "67962901935d078e1488921f" }, // Replace with actual user ID
-    //   {
-    //     $inc: {
-    //       tokenUsed: totalTokens, // Increment tokenUsed
-    //       tokenLimit: -totalTokens // Decrement tokenLimit
-    //     }
-    //   }
-    // );
-    // // Save batch-1 data
-
-    // if (response?.reportStatus === "success") {
-    //   const reportData = {
-    //     user: "67962901935d078e1488921f", // Replace with actual user ID
-    //     productName,
-    //     productCategory,
-    //     countryOfSale,
-    //     reportStatus: response.reportStatus,
-    //     reportMessage: response.reportMessage,
-    //     report: {}
-    //   };
-    //   // const newReport = new Report(reportData);
-    //   // newReport.save();
-    //   console.log("Data saved successfully to the database :", reportData);
-    // }
-    // 3rd batch ends here
 
     return NextResponse.json({
       // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )

@@ -1,5 +1,5 @@
 interface ReportDetails {
-  [x: string]: string;
+  report: "R1" | "R2" | "R3" | "R4" | "R5" | "R6" | "R7" | "R8" | "R9"; // ✅ Define valid values
   positive?: string;
   neutral?: string;
   negative?: string;

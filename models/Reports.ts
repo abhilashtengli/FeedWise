@@ -28,48 +28,66 @@ const reportSchema = new mongoose.Schema({
     required: true
   },
   report: {
-    positive: { type: String }, // For R1
-    neutral: { type: String }, // For R1
-    negative: { type: String }, // For R1
-    mostMentionedTopics: [
-      {
-        topic: { type: String },
-        percentage: { type: String }
-      }
-    ], // For R2
-    suggestions: [{ type: String }], // For R3
-    satisfactionScore: { type: String }, // For R4
-    confidenceLevel: { type: String }, // For R4
-    trendingPositive: [
-      {
-        trend: { type: String },
-        mentions: { type: String }
-      }
-    ], // For R5
-    trendingNegative: [
-      {
-        trend: { type: String },
-        mentions: { type: String }
-      }
-    ], // For R5
-    recommendedActions: {
-      negative: [{ type: String }],
-      neutral: [{ type: String }],
-      positive: [{ type: String }]
-    }, // For R6
-    customerComplaints: [{ type: String }], // For R7
-    featureRequests: [
-      {
-        feature: { type: String },
-        percentage: { type: String }
-      }
-    ], // For R8
-    emotionalTone: [
-      {
-        tone: { type: String },
-        percentage: { type: String }
-      }
-    ]
+    type: Object, // ✅ Explicitly define `report` as an object
+    default: {
+      positive: "",
+      neutral: "",
+      negative: "",
+      mostMentionedTopics: [],
+      suggestions: [],
+      satisfactionScore: "",
+      confidenceLevel: "",
+      trendingPositive: [],
+      trendingNegative: [],
+      recommendedActions: { negative: [], neutral: [], positive: [] },
+      customerComplaints: [],
+      featureRequests: [],
+      emotionalTone: []
+    },
+    properties: {
+      positive: { type: String }, // For R1
+      neutral: { type: String },
+      negative: { type: String },
+      mostMentionedTopics: [
+        {
+          topic: { type: String },
+          percentage: { type: String }
+        }
+      ],
+      suggestions: [{ type: String }],
+      satisfactionScore: { type: String },
+      confidenceLevel: { type: String },
+      trendingPositive: [
+        {
+          trend: { type: String },
+          mentions: { type: String }
+        }
+      ],
+      trendingNegative: [
+        {
+          trend: { type: String },
+          mentions: { type: String }
+        }
+      ],
+      recommendedActions: {
+        negative: [{ type: String }],
+        neutral: [{ type: String }],
+        positive: [{ type: String }]
+      },
+      customerComplaints: [{ type: String }],
+      featureRequests: [
+        {
+          feature: { type: String },
+          percentage: { type: String }
+        }
+      ],
+      emotionalTone: [
+        {
+          tone: { type: String },
+          percentage: { type: String }
+        }
+      ]
+    }
   }
 });
 
