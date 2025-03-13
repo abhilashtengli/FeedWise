@@ -1,9 +1,9 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
 import {
   PieChart,
   Pie,
@@ -33,123 +33,83 @@ import {
   ThumbsUp,
   ThumbsDown
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function Dashboard() {
   // Sample data from the provided JSON
-  const reportData = {
-    _id: "67d134e4120f7a05e529900b",
-    user: "67962901935d078e1488921f",
-    productName: "Micronised Creatine Monohydrate",
-    productCategory: "Creatine Protien",
-    countryOfSale: "India",
-    reportStatus: "success",
-    reportMessage:
-      "Analysis complete for Micronised Creatine Monohydrate customer reviews.",
-    report: {
-      positive: "68%",
-      neutral: "14%",
-      negative: "18%",
-      mostMentionedTopics: [
-        {
-          topic: "Effectiveness and Results",
-          percentage: "35%"
-        },
-        {
-          topic: "Taste and Smell",
-          percentage: "18%"
-        },
-        {
-          topic: "Packaging and Delivery Issues",
-          percentage: "12%"
-        },
-        {
-          topic: "Mixability",
-          percentage: "10%"
-        },
-        {
-          topic: "Price Comparison to Other Brands",
-          percentage: "8%"
-        }
-      ],
-      suggestions: [
-        "Improve packaging quality to prevent damage during transit.",
-        "Ensure delivery agents are trained for better customer service.",
-        "Address bad smell concerns through improved formulation or flavor options.",
-        "Consider competitive pricing strategies to match or undercut similar products."
-      ],
-      satisfactionScore: "8.3/10",
-      confidenceLevel: "89%",
-      trendingPositive: [
-        {
-          trend: "Increases strength",
-          mentions: "20%"
-        },
-        {
-          trend: "Great mixability",
-          mentions: "15%"
-        }
-      ],
-      trendingNegative: [
-        {
-          trend: "Bad smell",
-          mentions: "10%"
-        },
-        {
-          trend: "Overpriced compared to others",
-          mentions: "8%"
-        }
-      ],
-      recommendedActions: {
-        negative: [
-          "Improve packaging quality to enhance customer experience",
-          "Improve the delivery services"
+
+  const reportData = useMemo(
+    () => ({
+      _id: "67d134e4120f7a05e529900b",
+      user: "67962901935d078e1488921f",
+      productName: "Micronised Creatine Monohydrate",
+      productCategory: "Creatine Protein",
+      countryOfSale: "India",
+      reportStatus: "success",
+      reportMessage:
+        "Analysis complete for Micronised Creatine Monohydrate customer reviews.",
+      report: {
+        positive: "68%",
+        neutral: "14%",
+        negative: "18%",
+        mostMentionedTopics: [
+          { topic: "Effectiveness and Results", percentage: "35%" },
+          { topic: "Taste and Smell", percentage: "18%" },
+          { topic: "Packaging and Delivery Issues", percentage: "12%" },
+          { topic: "Mixability", percentage: "10%" },
+          { topic: "Price Comparison to Other Brands", percentage: "8%" }
         ],
-        neutral: ["Educate customers on proper creatine usage and hydration"],
-        positive: [
-          "Highlight positive user testimonials in marketing materials"
+        suggestions: [
+          "Improve packaging quality to prevent damage during transit.",
+          "Ensure delivery agents are trained for better customer service.",
+          "Address bad smell concerns through improved formulation or flavor options.",
+          "Consider competitive pricing strategies to match or undercut similar products."
+        ],
+        satisfactionScore: "8.3/10",
+        confidenceLevel: "89%",
+        trendingPositive: [
+          { trend: "Increases strength", mentions: "20%" },
+          { trend: "Great mixability", mentions: "15%" }
+        ],
+        trendingNegative: [
+          { trend: "Bad smell", mentions: "10%" },
+          { trend: "Overpriced compared to others", mentions: "8%" }
+        ],
+        recommendedActions: {
+          negative: [
+            "Improve packaging quality to enhance customer experience",
+            "Improve the delivery services"
+          ],
+          neutral: ["Educate customers on proper creatine usage and hydration"],
+          positive: [
+            "Highlight positive user testimonials in marketing materials"
+          ]
+        },
+        customerComplaints: [
+          "The product is smell very bad",
+          "Product is not up to the mark",
+          "Delivery agents misbehaved",
+          "Delivery agents are unresponsive",
+          "Product is not that good and uneffective as I felt"
+        ],
+        featureRequests: [
+          { feature: "Improve packaging quality", percentage: "5%" },
+          {
+            feature: "Consult nutritionist or doctor before use recommendation",
+            percentage: "5%"
+          }
+        ],
+        emotionalTone: [
+          { tone: "Joy", percentage: "40%" },
+          { tone: "Trust", percentage: "30%" },
+          { tone: "Disgust", percentage: "15%" },
+          { tone: "Anticipation", percentage: "10%" },
+          { tone: "Anger", percentage: "5%" }
         ]
-      },
-      customerComplaints: [
-        "The product is smell very bad",
-        "Product is not up to the mark",
-        "Delivery agents misbehaved",
-        "Delivery agents are unresponsive",
-        "Product is not that good and uneffective as I felt"
-      ],
-      featureRequests: [
-        {
-          feature: "Improve packaging quality",
-          percentage: "5%"
-        },
-        {
-          feature: "Consult nutritionist or doctor before use recommendation",
-          percentage: "5%"
-        }
-      ],
-      emotionalTone: [
-        {
-          tone: "Joy",
-          percentage: "40%"
-        },
-        {
-          tone: "Trust",
-          percentage: "30%"
-        },
-        {
-          tone: "Disgust",
-          percentage: "15%"
-        },
-        {
-          tone: "Anticipation",
-          percentage: "10%"
-        },
-        {
-          tone: "Anger",
-          percentage: "5%"
-        }
-      ]
-    }
-  };
+      }
+    }),
+    []
+  );
 
   // Prepare data for charts
   const sentimentData = [
@@ -206,7 +166,13 @@ export default function Dashboard() {
       emoji: emoji
     };
   });
+  const [progress, setProgress] = useState(0);
+  const [confidence, setConfidence] = useState(0);
 
+  useEffect(() => {
+    setProgress(Number.parseFloat(reportData.report.satisfactionScore) * 10);
+    setConfidence(Number.parseInt(reportData.report.confidenceLevel));
+  }, [reportData]);
   return (
     <div className="min-h-screen bg-black text-white p-6">
       {/* Header */}
@@ -229,7 +195,7 @@ export default function Dashboard() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-gray-900 to-cyan-950 border-gray-800 p-6 rounded-xl shadow-glow">
+        {/* <Card className="bg-gradient-to-br from-gray-900 to-cyan-950 border-gray-800 p-6 rounded-xl shadow-glow">
           <div className="flex items-center justify-between">
             <h3 className="text-gray-400 font-medium">Satisfaction Score</h3>
             <span className="text-2xl font-bold text-cyan-400">
@@ -238,8 +204,26 @@ export default function Dashboard() {
           </div>
           <Progress
             value={Number.parseFloat(reportData.report.satisfactionScore) * 10}
-            className="h-2 mt-4 bg-gray-800"
+            className="h-2 mt-4 bg-gray-500 border border-gray-500"
           />
+        </Card> */}
+        <Card className="bg-gradient-to-br from-gray-900 to-cyan-950 border-gray-800 p-6 rounded-xl shadow-glow">
+          <div className="flex items-center justify-between">
+            <h3 className="text-gray-400 font-medium">Satisfaction Score</h3>
+            <span className="text-2xl font-bold text-cyan-400">
+              {reportData.report.satisfactionScore}
+            </span>
+          </div>
+
+          {/* Animated Progress Bar */}
+          <div className="relative w-full h-2 mt-4 bg-gray-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: "0%" }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="h-full bg-cyan-400 rounded-full"
+            />
+          </div>
         </Card>
 
         <Card className="bg-gradient-to-br from-gray-900 to-purple-950 border-gray-800 p-6 rounded-xl shadow-glow">
@@ -249,10 +233,16 @@ export default function Dashboard() {
               {reportData.report.confidenceLevel}
             </span>
           </div>
-          <Progress
-            value={Number.parseInt(reportData.report.confidenceLevel)}
-            className="h-2 mt-4 bg-gray-800"
-          />
+
+          {/* Animated Progress Bar */}
+          <div className="relative w-full h-2 mt-4 bg-gray-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: "0%" }}
+              animate={{ width: `${confidence}%` }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              className="h-full bg-purple-400 rounded-full"
+            />
+          </div>
         </Card>
 
         <Card className="bg-gradient-to-br from-gray-900 to-indigo-950 border-gray-800 p-6 rounded-xl shadow-glow">

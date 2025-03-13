@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "feedwise": "file:",
+    "framer-motion": "^12.5.0",
     "franc-min": "^6.2.0",
     "lucide-react": "^0.479.0",
     "mongoose": "^8.9.3",
