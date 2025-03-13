@@ -398,58 +398,63 @@ export default function Dashboard() {
         <h3 className="text-xl font-semibold mb-4 text-gray-200">
           Emotional Tone Analysis
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-          {emotionalToneData.map((item, index) =>
-            <div
-              key={index}
-              className="flex flex-col items-center justify-center p-3 bg-gray-800/50 rounded-lg border border-gray-700"
-            >
-              <div className="text-3xl mb-1">
-                {item.emoji}
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4  border-red-500">
+            {emotionalToneData.map((item, index) =>
+              <div
+                key={index}
+                className="flex flex-col items-center justify-center p-3 bg-gray-800/50 rounded-lg border border-gray-700"
+              >
+                <div className="text-3xl mb-1">
+                  {item.emoji}
+                </div>
+                <div className="text-sm font-medium text-gray-300">
+                  {item.subject}
+                </div>
+                <div className="text-lg font-bold text-indigo-400">
+                  {item.A}%
+                </div>
               </div>
-              <div className="text-sm font-medium text-gray-300">
-                {item.subject}
-              </div>
-              <div className="text-lg font-bold text-indigo-400">
-                {item.A}%
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart
-              cx="50%"
-              cy="50%"
-              outerRadius="80%"
-              data={emotionalToneData}
-            >
-              <PolarGrid stroke="#444" />
-              <PolarAngleAxis dataKey="subject" tick={{ fill: "#ccc" }} />
-              <PolarRadiusAxis
-                angle={30}
-                domain={[0, 100]}
-                tick={{ fill: "#ccc" }}
-              />
-              <Radar
-                name="Emotional Tone"
-                dataKey="A"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.6}
-              />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#222", borderColor: "#444" }}
-                formatter={(value, name, props) => [
-                  `${value}%`,
-                  <span key={name}>
-                    {props.payload.emoji} {props.payload.subject}
-                  </span>
-                ]}
-              />
-              <Legend />
-            </RadarChart>
-          </ResponsiveContainer>
+            )}
+          </div>
+          <div className="h-80  border-red-500 ">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart
+                cx="50%"
+                cy="50%"
+                outerRadius="80%"
+                data={emotionalToneData}
+              >
+                <PolarGrid stroke="#444" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: "#ccc" }} />
+                <PolarRadiusAxis
+                  angle={17.5}
+                  domain={[0, 100]}
+                  tick={{ fill: "#ccc" }}
+                />
+                <Radar
+                  name="Emotional Tone"
+                  dataKey="A"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.6}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#222",
+                    borderColor: "#444"
+                  }}
+                  formatter={(value, name, props) => [
+                    `${value}%`,
+                    <span key={name}>
+                      {props.payload.emoji} {props.payload.subject}
+                    </span>
+                  ]}
+                />
+                <Legend />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </Card>
 
