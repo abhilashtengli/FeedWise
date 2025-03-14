@@ -69,7 +69,7 @@ const Signup = () => {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen ">
-        <Card className=" relative w-full max-w-xs border rounded-3xl py-8 shadow-glow mb-8 bg-black/50  border-gray-800 backdrop-blur-lg shadow-xl p-6 text-white bg-gradient-to-tr from-black to-zinc-900">
+        <Card className="relative w-full max-w-xs border rounded-3xl py-8 shadow-glow mb-8 bg-black/50  border-gray-800 backdrop-blur-lg shadow-xl p-6 text-white bg-gradient-to-tr from-black to-zinc-900">
           <div className=""></div>
           <CardHeader>
             <CardTitle className="text-2xl font-medium text-center tracking-wider">
@@ -82,42 +82,42 @@ const Signup = () => {
           <CardContent>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="mb-6  space-y-4">
-              <div className="space-y-2">
-                <Input
-                  id="name"
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="bg-zinc-900 font-medium tracking-wider rounded-xl focus:outline-none focus:ring-0 shadow-none"
-                />
+                <div className="space-y-2">
+                  <Input
+                    id="name"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="bg-zinc-900 font-medium tracking-wider rounded-xl focus:outline-none focus:ring-0 shadow-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-zinc-900 font-medium tracking-wider rounded-xl"
+                  />
+                  {emailError && (
+                    <p className="text-sm text-red-600">{emailError}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-zinc-900 font-medium tracking-wider rounded-xl"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-zinc-900 font-medium tracking-wider rounded-xl"
-                />
-                {emailError && (
-                  <p className="text-sm text-red-600">{emailError}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-zinc-900 font-medium tracking-wider rounded-xl"
-                />
-              </div>
-                   </div>
               <Button
                 type="submit"
                 className="w-full hover:bg-black border hover:text-white shadow-inner rounded-full bg-zinc-900 font-medium tracking-wider text-gray-500"
@@ -146,11 +146,17 @@ const Signup = () => {
           <CardFooter className="flex flex-col items-center space-y-4">
             <Link
               href="/signin"
-              className="text-sm text-blue-600 hover:underline hover:text-gray-200"
+              className="text-sm text-gray-400 hover:underline hover:text-gray-200"
             >
               Already have an account? Sign In
             </Link>
           </CardFooter>
+          <div className="w-full flex justify-center -mb-3">
+            <div className="w-8 h-[2px] bg-gray-500 rounded-full opacity-80"></div>
+          </div>
+          <div className="flex justify-center items-center">
+            <div className="absolute  h-[1.5px] w-[16rem] -bottom-0.5  bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+          </div>
         </Card>
       </div>
     </>
