@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    const user = await User.findOne({ where: { email: email } });
+    const user = await User.findOne({ email });
 
     if (user) {
       return NextResponse.json(
