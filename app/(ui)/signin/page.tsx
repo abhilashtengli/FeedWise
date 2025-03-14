@@ -12,14 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import Link from "next/link";
-import axios from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
 
-const Signup = () => {
-  const [name, setName] = useState("");
+const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,14 +43,13 @@ const Signup = () => {
     setIsLoading(true);
 
     const userData = {
-      name,
       email,
       password
     };
 
     try {
-      await axios.post("/api/auth/signup", userData);
-      console.log("signup successful");
+      await axios.post("/api/auth/signin", userData);
+      console.log("signin successful");
 
       const res = await signIn("credentials", {
         redirect: false,
@@ -76,47 +74,42 @@ const Signup = () => {
               Hi There!
             </CardTitle>
             <CardDescription className="text-center text-gray-600">
-              Create your account to get started
+              Enter your credentials to Sign In
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <div className="mb-6  space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    id="name"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="bg-zinc-900 font-medium tracking-wider rounded-xl focus:outline-none focus:ring-0 shadow-none"
-                  />
+              <div className="mb-6 relative ">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="bg-zinc-900 font-medium tracking-wider rounded-xl text-gray-500"
+                    />
+                    {emailError && (
+                      <p className="text-sm text-red-600">{emailError}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="bg-zinc-900 font-medium tracking-wider rounded-xl"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-zinc-900 font-medium tracking-wider rounded-xl"
-                  />
-                  {emailError && (
-                    <p className="text-sm text-red-600">{emailError}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="bg-zinc-900 font-medium tracking-wider rounded-xl"
-                  />
-                </div>
+                <button className="text-xs absolute right-1 mt-2 tracking-wider font-thin text-gray-300">
+                  Forget Password?
+                </button>
               </div>
               <Button
                 type="submit"
@@ -126,11 +119,11 @@ const Signup = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span>Signing up...</span>{" "}
+                    <span>Signing in...</span>{" "}
                     {/* ✅ Wrap text to apply font styles */}
                   </>
                 ) : (
-                  "Sign Up"
+                  "Sign In"
                 )}
               </Button>
 
@@ -139,16 +132,16 @@ const Signup = () => {
                 className="flex items-center justify-center w-full rounded-full py-2 hover:text-white text-gray-500 texl-lg tracking-wide font-medium  border bg-zinc-900 hover:bg-black transition"
               >
                 {/* <FcGoogle className="w-5 h-5 mr-2" /> Sign Up with Google */}
-                Sign up with Google
+                Sign in with Google
               </button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center space-y-4">
             <Link
-              href="/signin"
+              href="/signup"
               className="text-sm text-gray-400 hover:underline hover:text-gray-200"
             >
-              Already have an account? Sign In
+              You dont have an account? Sign up
             </Link>
           </CardFooter>
           <div className="w-full flex justify-center -mb-3">
@@ -163,4 +156,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Signin;
