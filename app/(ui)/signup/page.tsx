@@ -24,7 +24,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
-
+  const [signupError, setSignupError] = useState("");
   const router = useRouter();
 
   const validateEmail = (email: string) => {
@@ -52,15 +52,28 @@ const Signup = () => {
     try {
       await axios.post("/api/auth/signup", userData);
       console.log("signup successful");
+      // Do email verification
 
       const res = await signIn("credentials", {
         redirect: false,
         email,
         password
       });
+
       console.log("signin.....");
+      router.push("/");
     } catch (err) {
-      console.log(err);
+      console.error("Signup Error:", err);
+
+      if (axios.isAxiosError(err)) {
+        setSignupError(
+          err.response?.data?.message || "Signup failed. Please try again."
+        );
+      } else if (err instanceof Error) {
+        setSignupError(err.message); // Handle non-Axios errors
+      } else {
+        setSignupError("An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }

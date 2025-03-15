@@ -23,6 +23,7 @@ const Signin = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [signinError, setSigninError] = useState("");
 
   const router = useRouter();
 
@@ -35,7 +36,7 @@ const Signin = () => {
     e.preventDefault();
 
     if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email address");
+      setEmailError("Invalid Credentials");
       return;
     }
 
@@ -56,7 +57,13 @@ const Signin = () => {
         email,
         password
       });
+      if (res?.error) {
+        setSigninError("SignIn Error, Please try again later.");
+        setIsLoading(false);
+        return;
+      }
       console.log("signin.....");
+      router.push("/");
     } catch (err) {
       console.log(err);
     } finally {
@@ -78,7 +85,7 @@ const Signin = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-4 " onSubmit={handleSubmit}>
               <div className="mb-6 relative ">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -111,6 +118,8 @@ const Signin = () => {
                   Forget Password?
                 </button>
               </div>
+              {/* <div className="border "> */}
+
               <Button
                 type="submit"
                 className="w-full hover:bg-black border hover:text-white shadow-inner rounded-full bg-zinc-900 font-medium tracking-wider text-gray-500"
@@ -136,6 +145,11 @@ const Signin = () => {
               </button>
             </form>
           </CardContent>
+          {signinError && (
+            <h1 className="text-center w-full text-sm font-thin tracking-wider  mb-2 text-red-500">
+              {signinError}
+            </h1>
+          )}
           <CardFooter className="flex flex-col items-center space-y-4">
             <Link
               href="/signup"
