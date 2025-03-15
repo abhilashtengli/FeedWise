@@ -156,6 +156,11 @@ const Signup = () => {
               </button>
             </form>
           </CardContent>
+          {signupError && (
+            <h1 className="text-center w-full text-sm font-thin tracking-wider  mb-2 text-red-500">
+              {signupError}
+            </h1>
+          )}
           <CardFooter className="flex flex-col items-center space-y-4">
             <Link
               href="/signin"
