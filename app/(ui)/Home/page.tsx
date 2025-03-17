@@ -5,8 +5,10 @@ import Report from "./report";
 
 const page = () => {
   return (
-    <div>
-      <Report />
+    <div className="max-h-screen w-full flex justify-between">
+      <div className="h-full w-full">
+        <Report />
+      </div>
     </div>
   );
 };

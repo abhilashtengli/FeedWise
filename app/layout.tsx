@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "sonner";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Navbar } from "@/components/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,25 +23,34 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-black text-white h-screen w-screen overflow-hidden`}
       >
-        {/* <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        > */}
         <SidebarProvider>
-          {children}
+          <div className="flex h-screen w-screen">
+            {/* Sidebar - Fixed Width */}
+            <div className="w-[18%] h-full fixed left-0 top-0">
+              <AppSidebar />
+            </div>
+
+            {/* Main Content - Takes Remaining Space */}
+            <div className="flex flex-col w-[82%] h-full ml-[18%]">
+              {/* Navbar - Full Width */}
+              <div className=" h-[8%] w-[82%] fixed  ">
+                <Navbar />
+              </div>
+
+              {/* Content - Fills Remaining Height */}
+              <div className="flex h-full w-full overflow-auto mt-[5%] ">
+                {children}
+              </div>
+            </div>
+          </div>
           <Toaster />
         </SidebarProvider>
-        {/* </ThemeProvider> */}
       </body>
     </html>
   );

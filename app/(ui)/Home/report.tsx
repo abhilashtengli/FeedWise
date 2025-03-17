@@ -34,7 +34,6 @@ import {
   ThumbsDown
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { AppSidebar } from "@/components/app-sidebar";
 
 export default function Report() {
   // Sample data from the provided JSON
@@ -175,9 +174,8 @@ export default function Report() {
     setConfidence(Number.parseInt(reportData.report.confidenceLevel));
   }, [reportData]);
   return (
-    <div className="min-h-screen bg-black text-white p-6 w-full border">
+    <div className="min-h-screen bg-black text-white p-6   w-full">
       {/* Header */}
-      <AppSidebar />
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -93,7 +94,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border border-border fixed  w-[18%] h-[100%]">
+    <Sidebar className="border border-border  w-[18%] bg-black">
       <SidebarHeader>
         <motion.div
           className="flex items-center gap-2 p-3"
