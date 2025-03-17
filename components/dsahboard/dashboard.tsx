@@ -102,7 +102,7 @@ export default function Dashboard() {
                     title: "Feature Extraction",
                     description: "Identify key product features"
                   }
-                ].map((item, index) =>
+                ].map((item, index) => (
                   <motion.div
                     key={index}
                     variants={itemVariants}
@@ -112,14 +112,12 @@ export default function Dashboard() {
                     }}
                     className="rounded-lg border border-border bg-card p-4 transition-all"
                   >
-                    <h3 className="mb-2 font-medium">
-                      {item.title}
-                    </h3>
+                    <h3 className="mb-2 font-medium">{item.title}</h3>
                     <p className="text-sm text-muted-foreground">
                       {item.description}
                     </p>
                   </motion.div>
-                )}
+                ))}
               </motion.div>
             </div>
           </motion.div>

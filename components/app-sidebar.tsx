@@ -12,6 +12,7 @@ import {
   SidebarFooter,
   SidebarHeader
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 // Sample data for past reports
 const reports = [
@@ -130,13 +131,15 @@ export function AppSidebar() {
             whileTap={{ scale: 0.98 }}
             className="w-full"
           >
-            <Button
-              variant="outline"
-              className="w-full justify-start gap-2 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              New Analysis
-            </Button>
+            <Link href="/">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 text-sm"
+              >
+                <Plus className="h-4 w-4" />
+                New Analysis
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       </SidebarHeader>
