@@ -15,7 +15,7 @@ import {
 export function Navbar() {
   return (
     <motion.header
-      className="flex h-12 items-center justify-between border-b border-border px-4"
+      className="flex h-12 border border-border items-center justify-between px-4 fixed w-[82%]"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}

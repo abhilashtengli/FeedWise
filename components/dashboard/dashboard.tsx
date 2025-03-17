@@ -2,9 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sidebar } from "@/components/sidebar";
-import { Navbar } from "@/components/navbar";
-import { ChatInput } from "@/components/chat-input";
+import { ChatInput } from "./chat-input";
 
 export default function Dashboard() {
   // Force dark mode
@@ -35,11 +33,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-full w-full flex-col justify-center items-center  border-red-500">
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
         <main className="relative flex flex-1 flex-col overflow-hidden">
-          <Navbar />
           <motion.div
             className="flex flex-1 flex-col items-center justify-between overflow-auto"
             initial={{ opacity: 0 }}

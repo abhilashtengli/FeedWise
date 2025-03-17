@@ -1,47 +1,39 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Mic, Plus, Search, SendHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Mic, Plus, Search, SendHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 export function ChatInput() {
-  const [input, setInput] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const [input, setInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     // Simulate API call
     try {
       // In a real app, this would send the review to your backend
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast({
-        title: "Review submitted",
-        description: "Your review is being analyzed.",
-      })
+      toast("Review submitted. Your review is being analyzed.");
 
-      setInput("")
+      setInput("");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit review. Please try again.",
-        variant: "destructive",
-      })
+      toast("Error: Failed to submit review. Please try again." + error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -52,7 +44,7 @@ export function ChatInput() {
         type: "spring",
         stiffness: 400,
         damping: 30,
-        delay: 0.8,
+        delay: 0.8
       }}
     >
       <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
@@ -69,7 +61,10 @@ export function ChatInput() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-          <motion.div className="absolute bottom-3 right-3 flex items-center gap-2" whileHover={{ scale: 1.05 }}>
+          <motion.div
+            className="absolute bottom-3 right-3 flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+          >
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Button
                 type="submit"
@@ -85,7 +80,7 @@ export function ChatInput() {
             {[
               { icon: Plus, delay: 1.1 },
               { icon: Search, delay: 1.2 },
-              { icon: Mic, delay: 1.3 },
+              { icon: Mic, delay: 1.3 }
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -95,12 +90,17 @@ export function ChatInput() {
                   delay: item.delay,
                   type: "spring",
                   stiffness: 400,
-                  damping: 20,
+                  damping: 20
                 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button type="button" size="icon" variant="ghost" className="h-8 w-8 rounded-lg text-muted-foreground">
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 rounded-lg text-muted-foreground"
+                >
                   <item.icon className="h-4 w-4" />
                 </Button>
               </motion.div>
@@ -109,6 +109,5 @@ export function ChatInput() {
         </motion.div>
       </form>
     </motion.div>
-  )
+  );
 }
-
