@@ -34,7 +34,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-1 w-full h-full  space-y-10 ">
-      <main className="relative border w-full flex flex-1 flex-col overflow-hidden">
+      <main className="relative  w-full h-full flex flex-1 flex-col overflow-hidden">
         <motion.div
           className="flex flex-1 flex-col items-center justify-center overflow-auto"
           initial={{ opacity: 0 }}
