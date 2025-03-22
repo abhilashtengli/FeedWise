@@ -99,22 +99,22 @@ export function AppSidebar() {
       <SidebarHeader>
         <motion.div
           className="flex items-center gap-2 p-3"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          // initial={{ opacity: 0, y: -10 }}
+          // animate={{ opacity: 1, y: 0 }}
+          // transition={{ duration: 0.3 }}
         >
           <motion.div
-            initial={{ rotate: -10, scale: 0.8 }}
-            animate={{ rotate: 0, scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
+            // initial={{ rotate: -10, scale: 0.8 }}
+            // animate={{ rotate: 0, scale: 1 }}
+            // transition={{ duration: 0.5, type: "spring" }}
           >
             <MessageSquare className="h-5 w-5" />
           </motion.div>
           <motion.span
             className="font-semibold"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
+            // initial={{ opacity: 0 }}
+            // animate={{ opacity: 1 }}
+            // transition={{ delay: 0.2, duration: 0.3 }}
           >
             Feedwise
           </motion.span>
@@ -122,9 +122,9 @@ export function AppSidebar() {
 
         <motion.div
           className="flex items-center gap-2 p-3"
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
+          // initial={{ opacity: 0, y: -5 }}
+          // animate={{ opacity: 1, y: 0 }}
+          // transition={{ delay: 0.3, duration: 0.3 }}
         >
           <motion.div
             whileHover={{ scale: 1.02 }}
@@ -147,9 +147,9 @@ export function AppSidebar() {
       <SidebarContent>
         <motion.nav
           className="flex flex-col gap-1 p-2"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
+          // variants={containerVariants}
+          // initial="hidden"
+          // animate="show"
         >
           {/* Today's reports */}
           {groupedReports.today && groupedReports.today.length > 0 && (
@@ -270,9 +270,9 @@ export function AppSidebar() {
       <SidebarFooter>
         <motion.div
           className="p-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.3 }}
+          // initial={{ opacity: 0, y: 10 }}
+          // animate={{ opacity: 1, y: 0 }}
+          // transition={{ delay: 0.5, duration: 0.3 }}
         >
           <motion.div
             whileHover={{ scale: 1.02, y: -2 }}
@@ -283,15 +283,15 @@ export function AppSidebar() {
               className="w-full justify-start gap-2 text-sm"
             >
               <motion.div
-                animate={{
-                  rotate: [0, 5, 0, -5, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Number.POSITIVE_INFINITY,
-                  repeatDelay: 5
-                }}
+                // animate={{
+                //   rotate: [0, 5, 0, -5, 0],
+                //   scale: [1, 1.1, 1]
+                // }}
+                // transition={{
+                //   duration: 1.5,
+                //   repeat: Number.POSITIVE_INFINITY,
+                //   repeatDelay: 5
+                // }}
               >
                 <Sparkles className="h-4 w-4" />
               </motion.div>
