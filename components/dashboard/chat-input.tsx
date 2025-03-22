@@ -7,8 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { SendHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { baseUrl } from "@/lib/config";
+import { useSession } from "next-auth/react";
 
 export function ChatInput() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     productName: "",
     productCategory: "",
@@ -25,6 +30,8 @@ export function ChatInput() {
       [e.target.name]: e.target.value
     });
   };
+  const { data: session } = useSession();
+  const token = session?.accessToken;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +43,16 @@ export function ChatInput() {
     try {
       // In a real app, you would send all formData fields to your backend
       console.log("Submitting data:", formData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await axios.post(baseUrl + "/gpt", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log("Response :", response.data.data);
       toast("Review submitted. Your review is being analyzed.");
+      router.push(`/report/${1234}`);
+
       setFormData({
         productName: "",
         productCategory: "",
@@ -118,7 +133,7 @@ export function ChatInput() {
               placeholder="Enter Country of Sale"
               value={formData.countryOfSale}
               onChange={handleChange}
-              className="w-full h-10 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              className="w-full h-10 px-3 py-2 text bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               required
             />
           </motion.div>

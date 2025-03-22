@@ -54,11 +54,13 @@ const Signup = () => {
       console.log("signup successful");
       // Do email verification
 
-      const res = await signIn("credentials", {
+      const response = await signIn("credentials", {
         redirect: false,
         email,
         password
       });
+
+      console.log(response);
 
       console.log("signin.....");
       router.push("/");

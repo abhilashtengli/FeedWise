@@ -130,13 +130,13 @@ export default function Report() {
     }
   ];
 
-  const topicsData = reportData.report.mostMentionedTopics.map(topic => ({
+  const topicsData = reportData.report.mostMentionedTopics.map((topic) => ({
     name: topic.topic,
     value: Number.parseInt(topic.percentage)
   }));
 
   // Update the emotionalToneData to include emoji mappings
-  const emotionalToneData = reportData.report.emotionalTone.map(tone => {
+  const emotionalToneData = reportData.report.emotionalTone.map((tone) => {
     // Add emoji mapping for each emotional tone
     let emoji = "🔍";
     switch (tone.tone) {
@@ -169,13 +169,10 @@ export default function Report() {
   const [progress, setProgress] = useState(0);
   const [confidence, setConfidence] = useState(0);
 
-  useEffect(
-    () => {
-      setProgress(Number.parseFloat(reportData.report.satisfactionScore) * 10);
-      setConfidence(Number.parseInt(reportData.report.confidenceLevel));
-    },
-    [reportData]
-  );
+  useEffect(() => {
+    setProgress(Number.parseFloat(reportData.report.satisfactionScore) * 10);
+    setConfidence(Number.parseInt(reportData.report.confidenceLevel));
+  }, [reportData]);
   return (
     <div className="min-h-screen bg-black text-white p-6   w-full">
       {/* Header */}
@@ -285,11 +282,12 @@ export default function Report() {
                   paddingAngle={5}
                   dataKey="value"
                   label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`}
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
                 >
-                  {sentimentData.map((entry, index) =>
+                  {sentimentData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
-                  )}
+                  ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -323,7 +321,7 @@ export default function Report() {
                     backgroundColor: "#222",
                     borderColor: "#444"
                   }}
-                  formatter={value => [`${value}%`, "Percentage"]}
+                  formatter={(value) => [`${value}%`, "Percentage"]}
                 />
                 <Bar
                   dataKey="value"
@@ -347,22 +345,20 @@ export default function Report() {
             </h3>
           </div>
           <div className="space-y-4">
-            {reportData.report.trendingPositive.map((item, index) =>
+            {reportData.report.trendingPositive.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
               >
                 <div className="flex items-center">
                   <ThumbsUp className="h-4 w-4 text-emerald-500 mr-2" />
-                  <span className="text-gray-300">
-                    {item.trend}
-                  </span>
+                  <span className="text-gray-300">{item.trend}</span>
                 </div>
                 <Badge className="bg-emerald-900 text-emerald-300">
                   {item.mentions}
                 </Badge>
               </div>
-            )}
+            ))}
           </div>
         </Card>
 
@@ -374,22 +370,20 @@ export default function Report() {
             </h3>
           </div>
           <div className="space-y-4">
-            {reportData.report.trendingNegative.map((item, index) =>
+            {reportData.report.trendingNegative.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
               >
                 <div className="flex items-center">
                   <ThumbsDown className="h-4 w-4 text-red-500 mr-2" />
-                  <span className="text-gray-300">
-                    {item.trend}
-                  </span>
+                  <span className="text-gray-300">{item.trend}</span>
                 </div>
                 <Badge className="bg-red-900 text-red-300">
                   {item.mentions}
                 </Badge>
               </div>
-            )}
+            ))}
           </div>
         </Card>
       </div>
@@ -401,14 +395,12 @@ export default function Report() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4  border-red-500">
-            {emotionalToneData.map((item, index) =>
+            {emotionalToneData.map((item, index) => (
               <div
                 key={index}
                 className="flex flex-col items-center justify-center p-3 bg-gray-800/50 rounded-lg border border-gray-700"
               >
-                <div className="text-3xl mb-1">
-                  {item.emoji}
-                </div>
+                <div className="text-3xl mb-1">{item.emoji}</div>
                 <div className="text-sm font-medium text-gray-300">
                   {item.subject}
                 </div>
@@ -416,7 +408,7 @@ export default function Report() {
                   {item.A}%
                 </div>
               </div>
-            )}
+            ))}
           </div>
           <div className="h-80  border-red-500 ">
             <ResponsiveContainer width="100%" height="100%">
@@ -491,17 +483,15 @@ export default function Report() {
               </h3>
             </div>
             <ul className="space-y-3">
-              {reportData.report.suggestions.map((suggestion, index) =>
+              {reportData.report.suggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   className="flex items-start p-3 bg-gray-800/50 rounded-lg border border-gray-700"
                 >
                   <div className="flex-shrink-0 mr-3 text-yellow-500">•</div>
-                  <span className="text-gray-300">
-                    {suggestion}
-                  </span>
+                  <span className="text-gray-300">{suggestion}</span>
                 </li>
-              )}
+              ))}
             </ul>
           </Card>
         </TabsContent>
@@ -518,15 +508,14 @@ export default function Report() {
                 </div>
                 <ul className="space-y-2">
                   {reportData.report.recommendedActions.positive.map(
-                    (action, index) =>
+                    (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-green-500">
                           •
                         </div>
-                        <span className="text-green-200 text-sm">
-                          {action}
-                        </span>
+                        <span className="text-green-200 text-sm">{action}</span>
                       </li>
+                    )
                   )}
                 </ul>
               </div>
@@ -538,15 +527,14 @@ export default function Report() {
                 </div>
                 <ul className="space-y-2">
                   {reportData.report.recommendedActions.neutral.map(
-                    (action, index) =>
+                    (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-blue-500">
                           •
                         </div>
-                        <span className="text-blue-200 text-sm">
-                          {action}
-                        </span>
+                        <span className="text-blue-200 text-sm">{action}</span>
                       </li>
+                    )
                   )}
                 </ul>
               </div>
@@ -558,13 +546,12 @@ export default function Report() {
                 </div>
                 <ul className="space-y-2">
                   {reportData.report.recommendedActions.negative.map(
-                    (action, index) =>
+                    (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-red-500">•</div>
-                        <span className="text-red-200 text-sm">
-                          {action}
-                        </span>
+                        <span className="text-red-200 text-sm">{action}</span>
                       </li>
+                    )
                   )}
                 </ul>
               </div>
@@ -581,7 +568,7 @@ export default function Report() {
               </h3>
             </div>
             <ul className="space-y-3">
-              {reportData.report.customerComplaints.map((complaint, index) =>
+              {reportData.report.customerComplaints.map((complaint, index) => (
                 <li
                   key={index}
                   className="flex items-start p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -594,12 +581,10 @@ export default function Report() {
                     </div>
                   </div>
                   <div className="pt-1">
-                    <p className="text-gray-300">
-                      {complaint}
-                    </p>
+                    <p className="text-gray-300">{complaint}</p>
                   </div>
                 </li>
-              )}
+              ))}
             </ul>
           </Card>
         </TabsContent>
@@ -614,22 +599,20 @@ export default function Report() {
           </h3>
         </div>
         <ul className="space-y-3">
-          {reportData.report.featureRequests.map((request, index) =>
+          {reportData.report.featureRequests.map((request, index) => (
             <li
               key={index}
               className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
             >
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-2 text-pink-500">•</div>
-                <span className="text-gray-300">
-                  {request.feature}
-                </span>
+                <span className="text-gray-300">{request.feature}</span>
               </div>
               <Badge className="bg-pink-900 text-pink-300">
                 {request.percentage}
               </Badge>
             </li>
-          )}
+          ))}
         </ul>
       </Card>
 
@@ -639,9 +622,7 @@ export default function Report() {
           Generated by FeedWise AI • Confidence Level:{" "}
           {reportData.report.confidenceLevel}
         </p>
-        <p className="mt-1">
-          Report ID: {reportData._id}
-        </p>
+        <p className="mt-1">Report ID: {reportData._id}</p>
       </div>
     </div>
   );

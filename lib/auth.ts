@@ -28,6 +28,7 @@ export const authOptions: NextAuthOptions = {
         if (!isPasswordValid) {
           throw new Error("Invalid credentials");
         }
+        console.log("Login successfull" + user.name, user.email);
         return { id: user._id.toString(), name: user.name, email: user.email };
       }
     })

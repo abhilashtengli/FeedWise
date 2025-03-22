@@ -9,12 +9,14 @@ import connectDB from "@/lib/database";
 import {
   promptBatch01,
   promptBatch02,
-  promptBatch03
+  promptBatch03,
 } from "@/lib/constants/prompt";
 import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
 import { AnalysisResponse } from "@/types/AnalysisReport";
 import Report from "@/models/Reports";
+import { getServerSession } from "next-auth";
+import authOptions from "@/lib/auth";
 // import { Types } from "mongoose";
 // import { normalizeAIResponse } from "@/lib/constants.ts/normalizeAIResponse";
 
@@ -52,15 +54,14 @@ const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
   countryOfSale: z.string(),
-  messages: z.string().min(1, "Reviews must be a non-empty string")
+  message: z.string().min(1, "Reviews must be a non-empty string"),
 });
-const userId = "67962901935d078e1488921f"; // Replace with actual user ID
 let newReportId: string;
 
 const batchConfigurations = [
   { promptFunction: promptBatch01, jsonSchema: "jsonSchemaB1" },
   { promptFunction: promptBatch02, jsonSchema: "jsonSchemaB2" },
-  { promptFunction: promptBatch03, jsonSchema: "jsonSchemaB3" }
+  { promptFunction: promptBatch03, jsonSchema: "jsonSchemaB3" },
 ];
 
 async function updateTokenUsage(userId: string, tokensUsed: number) {
@@ -68,9 +69,6 @@ async function updateTokenUsage(userId: string, tokensUsed: number) {
     { user: userId },
     { $inc: { tokenUsed: tokensUsed, tokenLimit: -tokensUsed } }
   );
-  // console.log(
-  //   `Token usage updated for user: ${userId}, Tokens used: ${tokensUsed}`
-  // );
 }
 
 async function saveReport(
@@ -102,8 +100,8 @@ async function saveReport(
         recommendedActions: { negative: [], neutral: [], positive: [] },
         customerComplaints: [],
         featureRequests: [],
-        emotionalTone: []
-      }
+        emotionalTone: [],
+      },
     };
 
     // Merge reports data
@@ -142,7 +140,7 @@ async function saveReport(
     // console.log("Existing Report : " + existingReport);
     if (!existingReport) {
       return NextResponse.json({
-        message: "The Schema for the report is not generated"
+        message: "The Schema for the report is not generated",
       });
     }
     // if (existingReport && response.reports?.length) {
@@ -224,12 +222,20 @@ async function processBatch(
 }
 export async function POST(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    console.log("Session : " + session);
+    if (!session) {
+      return NextResponse.json({ message: "Please login!" });
+    }
+
+    const userId = session.user.id;
+    console.log("UserId : " + userId, session.user.email);
     await connectDB();
     const text = await req.text();
     const sanitizedText = text.replace(/[\u0000-\u001F]+/g, " ");
     const body = JSON.parse(sanitizedText);
 
-    if (!body.messages || typeof body.messages !== "string") {
+    if (!body.message || typeof body.message !== "string") {
       return NextResponse.json(
         { error: "Invalid request: 'reviews' must be a non-empty string" },
         { status: 400 }
@@ -240,29 +246,33 @@ export async function POST(req: NextRequest) {
     if (!result.success) {
       return NextResponse.json({
         message: "Please provide valid Input",
-        error: result.error.errors
+        error: result.error.errors,
       });
     }
     const productName = body.productName as string;
     const productCategory = body.productCategory as string;
     const countryOfSale = body.countryOfSale as string;
 
-    const cleanedReviews = body.messages.replace(/\s+/g, " ").trim();
+    const cleanedReviews = body.message.replace(/\s+/g, " ").trim();
     if (cleanedReviews.length === 0) {
       return NextResponse.json({
-        reportStatus: "error",
-        reportMessage:
-          "Invalid input. Please provide actual customer reviews for analysis.",
-        reports: null
+        data: {
+          reportStatus: "error",
+          reportMessage:
+            "Invalid input. Please provide actual customer reviews for analysis.",
+          reports: null,
+        },
       });
     }
 
     if (!isValidText(cleanedReviews) || !isCleanText(cleanedReviews)) {
       return NextResponse.json({
-        reportStatus: "error",
-        reportMessage:
-          "Invalid input. Please provide actual customer reviews for analysis.",
-        reports: null
+        data: {
+          reportStatus: "error",
+          reportMessage:
+            "Invalid input. Please provide actual customer reviews for analysis.",
+          reports: null,
+        },
       });
     }
 
@@ -271,13 +281,15 @@ export async function POST(req: NextRequest) {
 
     if (count > 2500) {
       return NextResponse.json({
-        message:
-          "Your request exceeds the token limit (2500). Please reduce the input size and try again."
+        data: {
+          message:
+            "Your request exceeds the token limit (2500). Please reduce the input size and try again.",
+        },
       });
     }
 
     const subDetails = await Subscription.findOne({
-      user: "67962901935d078e1488921f" //Replace with Id
+      user: userId, //Replace with Id
     }).select("tokenUsed tokenLimit");
 
     // console.log(
@@ -290,15 +302,19 @@ export async function POST(req: NextRequest) {
 
     if (!subDetails) {
       return NextResponse.json({
-        message:
-          "Subscription details not found. Please ensure the user has a valid subscription."
+        data: {
+          message:
+            "Subscription details not found. Please ensure the user has a valid subscription.",
+        },
       });
     }
 
     if (count > subDetails.tokenLimit) {
       return NextResponse.json({
-        message:
-          "Your request exceeds the token limit . Please Upgrade your free tier plan."
+        data: {
+          message:
+            "Your request exceeds the token limit . Please Upgrade your free tier plan.",
+        },
       });
     }
 
@@ -319,9 +335,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
-      data: finalReport,
-      message: "Successfull",
-      TokenCount: count
+      data: {
+        report: finalReport,
+        message: "Successfull",
+        TokenCount: count,
+      },
     });
   } catch (error) {
     if (error instanceof OpenAI.APIError) {
@@ -331,7 +349,7 @@ export async function POST(req: NextRequest) {
           name,
           status,
           headers,
-          message
+          message,
         },
         { status }
       );

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Report from "./report";
+import Report from "../report";
 
 const page = () => {
   return (

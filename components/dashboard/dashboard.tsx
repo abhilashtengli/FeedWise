@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChatInput } from "./chat-input";
+import { SessionProvider } from "next-auth/react";
 
 export default function Dashboard() {
   // Force dark mode
@@ -33,7 +34,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className=" w-full h-full overflow-hidden  overflow-hidden">
+    <div className=" w-full h-full overflow-hidden  ">
       <main className="relative  w-full h-full flex flex-col overflow-hidden">
         <motion.div
           className="flex flex-1 flex-col items-center justify-center overflow-auto"
@@ -121,7 +122,9 @@ export default function Dashboard() {
               </motion.div>
             )}
           </motion.div>
-          <ChatInput />
+          <SessionProvider>
+            <ChatInput />
+          </SessionProvider>
         </motion.div>
       </main>
     </div>

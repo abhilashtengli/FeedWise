@@ -16,7 +16,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 
 const Signin = () => {
   const [email, setEmail] = useState("");
@@ -43,13 +43,13 @@ const Signin = () => {
     setEmailError("");
     setIsLoading(true);
 
-    const userData = {
-      email,
-      password
-    };
+    // const userData = {
+    //   email,
+    //   password
+    // };
 
     try {
-      await axios.post("/api/auth/signin", userData);
+      // await axios.post("/api/auth/signin", userData);
       console.log("signin successful");
 
       const res = await signIn("credentials", {
@@ -59,6 +59,7 @@ const Signin = () => {
       });
       if (res?.error) {
         setSigninError("SignIn Error, Please try again later.");
+        console.log(res.error);
         setIsLoading(false);
         return;
       }
