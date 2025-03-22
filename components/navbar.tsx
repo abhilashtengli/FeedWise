@@ -14,18 +14,14 @@ import {
 
 export function Navbar() {
   return (
-    <motion.header
-      className="flex h-full  border-b border-border items-center justify-between px-4 py-2"
-      // initial={{ y: -20, opacity: 0 }}
-      // animate={{ y: 0, opacity: 1 }}
-      // transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        className="flex items-center gap-2"
-        // initial={{ opacity: 0, x: -20 }}
-        // animate={{ opacity: 1, x: 0 }}
-        // transition={{ delay: 0.2, duration: 0.3 }}
-      >
+    <header className="flex h-full  border-b border-border items-center justify-between px-4 py-2">
+      {/* // initial={{ y: -20, opacity: 0 }}
+    // animate={{ y: 0, opacity: 1 }}
+    // transition={{ duration: 0.3 }} */}
+      <motion.div className="flex items-center gap-2">
+        {/* // initial={{ opacity: 0, x: -20 }}
+      // animate={{ opacity: 1, x: 0 }}
+      // transition={{ delay: 0.2, duration: 0.3 }} */}
         <motion.div
           whileHover={{ scale: 1.1, rotate: 5 }}
           whileTap={{ scale: 0.95 }}
@@ -44,12 +40,10 @@ export function Navbar() {
         </motion.div>
       </motion.div>
 
-      <motion.div
-        className="font-medium"
-        // initial={{ y: -20, opacity: 0 }}
-        // animate={{ y: 0, opacity: 1 }}
-        // transition={{ delay: 0.3, duration: 0.3 }}
-      >
+      <motion.div className="font-medium">
+        {/* // initial={{ y: -20, opacity: 0 }}
+      // animate={{ y: 0, opacity: 1 }}
+      // transition={{ delay: 0.3, duration: 0.3 }} */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -85,12 +79,10 @@ export function Navbar() {
         </DropdownMenu>
       </motion.div>
 
-      <motion.div
-        className="flex items-center"
-        // initial={{ opacity: 0, x: 20 }}
-        // animate={{ opacity: 1, x: 0 }}
-        // transition={{ delay: 0.4, duration: 0.3 }}
-      >
+      <motion.div className="flex items-center">
+        {/* // initial={{ opacity: 0, x: 20 }}
+      // animate={{ opacity: 1, x: 0 }}
+      // transition={{ delay: 0.4, duration: 0.3 }} */}
         <motion.div
         // initial={{ opacity: 0 }}
         // animate={{ opacity: 1 }}
@@ -150,6 +142,6 @@ export function Navbar() {
           </DropdownMenuContent>
         </DropdownMenu>
       </motion.div>
-    </motion.header>
+    </header>
   );
 }
