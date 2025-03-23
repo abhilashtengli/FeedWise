@@ -9,7 +9,7 @@ import connectDB from "@/lib/database";
 import {
   promptBatch01,
   promptBatch02,
-  promptBatch03,
+  promptBatch03
 } from "@/lib/constants/prompt";
 import { z } from "zod";
 import { analyseFeedback } from "@/lib/analyseFeedback";
@@ -54,14 +54,14 @@ const validInput = z.object({
   productName: z.string(),
   productCategory: z.string(),
   countryOfSale: z.string(),
-  message: z.string().min(1, "Reviews must be a non-empty string"),
+  message: z.string().min(1, "Reviews must be a non-empty string")
 });
 let newReportId: string;
 
 const batchConfigurations = [
   { promptFunction: promptBatch01, jsonSchema: "jsonSchemaB1" },
   { promptFunction: promptBatch02, jsonSchema: "jsonSchemaB2" },
-  { promptFunction: promptBatch03, jsonSchema: "jsonSchemaB3" },
+  { promptFunction: promptBatch03, jsonSchema: "jsonSchemaB3" }
 ];
 
 async function updateTokenUsage(userId: string, tokensUsed: number) {
@@ -100,8 +100,8 @@ async function saveReport(
         recommendedActions: { negative: [], neutral: [], positive: [] },
         customerComplaints: [],
         featureRequests: [],
-        emotionalTone: [],
-      },
+        emotionalTone: []
+      }
     };
 
     // Merge reports data
@@ -140,7 +140,7 @@ async function saveReport(
     // console.log("Existing Report : " + existingReport);
     if (!existingReport) {
       return NextResponse.json({
-        message: "The Schema for the report is not generated",
+        message: "The Schema for the report is not generated"
       });
     }
     // if (existingReport && response.reports?.length) {
@@ -246,7 +246,7 @@ export async function POST(req: NextRequest) {
     if (!result.success) {
       return NextResponse.json({
         message: "Please provide valid Input",
-        error: result.error.errors,
+        error: result.error.errors
       });
     }
     const productName = body.productName as string;
@@ -260,8 +260,8 @@ export async function POST(req: NextRequest) {
           reportStatus: "error",
           reportMessage:
             "Invalid input. Please provide actual customer reviews for analysis.",
-          reports: null,
-        },
+          reports: null
+        }
       });
     }
 
@@ -271,8 +271,8 @@ export async function POST(req: NextRequest) {
           reportStatus: "error",
           reportMessage:
             "Invalid input. Please provide actual customer reviews for analysis.",
-          reports: null,
-        },
+          reports: null
+        }
       });
     }
 
@@ -283,13 +283,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         data: {
           message:
-            "Your request exceeds the token limit (2500). Please reduce the input size and try again.",
-        },
+            "Your request exceeds the token limit (2500). Please reduce the input size and try again."
+        }
       });
     }
 
     const subDetails = await Subscription.findOne({
-      user: userId, //Replace with Id
+      user: userId //Replace with Id
     }).select("tokenUsed tokenLimit");
 
     // console.log(
@@ -304,8 +304,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         data: {
           message:
-            "Subscription details not found. Please ensure the user has a valid subscription.",
-        },
+            "Subscription details not found. Please ensure the user has a valid subscription."
+        }
       });
     }
 
@@ -313,8 +313,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         data: {
           message:
-            "Your request exceeds the token limit . Please Upgrade your free tier plan.",
-        },
+            "Your request exceeds the token limit . Please Upgrade your free tier plan."
+        }
       });
     }
 
@@ -337,9 +337,9 @@ export async function POST(req: NextRequest) {
       // While efforts are made to handle sarcasm, accuracy may vary depending on context. ( add in  Sentiment Analysis  )
       data: {
         report: finalReport,
-        message: "Successfull",
-        TokenCount: count,
-      },
+        message: "successfull",
+        TokenCount: count
+      }
     });
   } catch (error) {
     if (error instanceof OpenAI.APIError) {
@@ -349,7 +349,7 @@ export async function POST(req: NextRequest) {
           name,
           status,
           headers,
-          message,
+          message
         },
         { status }
       );
