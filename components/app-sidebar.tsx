@@ -283,6 +283,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { baseUrl } from "@/lib/config";
 import axios from "axios";
+import { ReportListSkeleton } from "./reportListSkeleton";
 
 // Define the report type based on the API response
 interface Report {
@@ -415,14 +416,19 @@ export function AppSidebar() {
 
       <SidebarContent>
         <motion.nav
-          className="flex flex-col gap-1 p-2"
+          className={cn(
+            "flex flex-col gap-1 p-2",
+            status === "loading" || loading
+              ? "overflow-hidden h-full"
+              : "overflow-auto"
+          )}
           variants={containerVariants}
           initial="hidden"
           animate="show"
         >
           {status === "loading" || loading ? (
-            <div className="flex justify-center items-center h-20 text-muted-foreground">
-              Loading reports...
+            <div className="flex justify-center items-start text-muted-foreground  h-full max-h-full overflow-hidden">
+              <ReportListSkeleton todayCount={4} pastCount={10} />
             </div>
           ) : status === "unauthenticated" ? (
             <div className="text-center py-8 text-muted-foreground">
