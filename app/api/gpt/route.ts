@@ -225,7 +225,7 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     console.log("Session : " + session);
     if (!session) {
-      return NextResponse.json({ message: "Please login!" });
+      return NextResponse.json({data :{ message: "Please login!" }});
     }
 
     const userId = session.user.id;
