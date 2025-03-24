@@ -31,128 +31,206 @@ import {
   Lightbulb,
   Heart,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  RefreshCcw,
+  AlertCircle
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import axios from "axios";
+import { baseUrl } from "@/lib/config";
+import { Button } from "@/components/ui/button";
+
+// Define the report type structure based on the API response
+interface ReportData {
+  _id: string;
+  user: string;
+  productName: string;
+  productCategory: string;
+  countryOfSale: string;
+  reportStatus: string;
+  reportMessage: string;
+  report: {
+    positive: string;
+    neutral: string;
+    negative: string;
+    mostMentionedTopics: Array<{
+      topic: string;
+      percentage: string;
+    }>;
+    suggestions: string[];
+    satisfactionScore: string;
+    confidenceLevel: string;
+    trendingPositive: Array<{
+      trend: string;
+      mentions: string;
+    }>;
+    trendingNegative: Array<{
+      trend: string;
+      mentions: string;
+    }>;
+    recommendedActions: {
+      negative: string[];
+      neutral: string[];
+      positive: string[];
+    };
+    customerComplaints: string[];
+    featureRequests: Array<{
+      feature: string;
+      percentage: string;
+    }>;
+    emotionalTone: Array<{
+      tone: string;
+      percentage: string;
+    }>;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function Report() {
-  // Sample data from the provided JSON
+  const [report, setReport] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [confidence, setConfidence] = useState(0);
 
-  const reportData = useMemo(
-    () => ({
-      _id: "67d134e4120f7a05e529900b",
-      user: "67962901935d078e1488921f",
-      productName: "Micronised Creatine Monohydrate",
-      productCategory: "Creatine Protein",
-      countryOfSale: "India",
-      reportStatus: "success",
-      reportMessage:
-        "Analysis complete for Micronised Creatine Monohydrate customer reviews.",
-      report: {
-        positive: "68%",
-        neutral: "14%",
-        negative: "18%",
-        mostMentionedTopics: [
-          { topic: "Effectiveness and Results", percentage: "35%" },
-          { topic: "Taste and Smell", percentage: "18%" },
-          { topic: "Packaging and Delivery Issues", percentage: "12%" },
-          { topic: "Mixability", percentage: "10%" },
-          { topic: "Price Comparison to Other Brands", percentage: "8%" }
-        ],
-        suggestions: [
-          "Improve packaging quality to prevent damage during transit.",
-          "Ensure delivery agents are trained for better customer service.",
-          "Address bad smell concerns through improved formulation or flavor options.",
-          "Consider competitive pricing strategies to match or undercut similar products."
-        ],
-        satisfactionScore: "8.3/10",
-        confidenceLevel: "89%",
-        trendingPositive: [
-          { trend: "Increases strength", mentions: "20%" },
-          { trend: "Great mixability", mentions: "15%" }
-        ],
-        trendingNegative: [
-          { trend: "Bad smell", mentions: "10%" },
-          { trend: "Overpriced compared to others", mentions: "8%" }
-        ],
-        recommendedActions: {
-          negative: [
-            "Improve packaging quality to enhance customer experience",
-            "Improve the delivery services"
-          ],
-          neutral: ["Educate customers on proper creatine usage and hydration"],
-          positive: [
-            "Highlight positive user testimonials in marketing materials"
-          ]
-        },
-        customerComplaints: [
-          "The product is smell very bad",
-          "Product is not up to the mark",
-          "Delivery agents misbehaved",
-          "Delivery agents are unresponsive",
-          "Product is not that good and uneffective as I felt"
-        ],
-        featureRequests: [
-          { feature: "Improve packaging quality", percentage: "5%" },
-          {
-            feature: "Consult nutritionist or doctor before use recommendation",
-            percentage: "5%"
-          }
-        ],
-        emotionalTone: [
-          { tone: "Joy", percentage: "40%" },
-          { tone: "Trust", percentage: "30%" },
-          { tone: "Disgust", percentage: "15%" },
-          { tone: "Anticipation", percentage: "10%" },
-          { tone: "Anger", percentage: "5%" }
-        ]
+  const { id } = useParams();
+  const router = useRouter();
+
+  // Function to fetch report data
+  const fetchReport = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await axios.get(`${baseUrl}/reports/${id}`);
+      const reportData = response.data.data;
+      console.log("ReportData", reportData);
+      if (response.data?.data?.report) {
+        setReport(response.data.data.report);
+
+        // Set progress and confidence values
+        if (response.data.data.report.report) {
+          const satisfactionScore = Number.parseFloat(
+            response.data.data.report.report.satisfactionScore
+          );
+          const confidenceLevel = Number.parseInt(
+            response.data.data.report.report.confidenceLevel
+          );
+
+          setProgress(isNaN(satisfactionScore) ? 0 : satisfactionScore * 10);
+          setConfidence(isNaN(confidenceLevel) ? 0 : confidenceLevel);
+        }
+      } else {
+        setError("Invalid report data structure");
       }
-    }),
-    []
-  );
+    } catch (err) {
+      console.error("Error fetching report:", err);
+      setError("Failed to load report. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch report on component mount
+  useEffect(() => {
+    if (id) {
+      fetchReport();
+    } else {
+      setError("No report ID provided");
+      setLoading(false);
+    }
+  }, [id]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+        <RefreshCcw className="h-12 w-12 text-indigo-500 animate-spin mb-4" />
+        <h2 className="text-xl font-semibold mb-2">Loading Report</h2>
+        <p className="text-gray-400">
+          Please wait, retrieving analysis data...
+        </p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !report) {
+    return (
+      <div className="min-h-screen bg-black  text-white flex flex-col items-center justify-center p-6">
+        <div className="bg-opacity-20  p-8 rounded-xl border border-white max-w-md text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Error Loading Report</h2>
+          <p className="text-gray-300 mb-6">{error || "Report not found"}</p>
+          <div className="flex gap-4 justify-center">
+            <Button
+              variant="outline"
+              onClick={() => router.push("/")}
+              className="border-gray-700 hover:bg-gray-800"
+            >
+              Go Home
+            </Button>
+            <Button
+              onClick={fetchReport}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Prepare data for charts
   const sentimentData = [
     {
       name: "Positive",
-      value: Number.parseInt(reportData.report.positive),
+      value: Number.parseInt(report.report.positive),
       color: "#10b981"
     },
     {
       name: "Neutral",
-      value: Number.parseInt(reportData.report.neutral),
+      value: Number.parseInt(report.report.neutral),
       color: "#6366f1"
     },
     {
       name: "Negative",
-      value: Number.parseInt(reportData.report.negative),
+      value: Number.parseInt(report.report.negative),
       color: "#ef4444"
     }
   ];
 
-  const topicsData = reportData.report.mostMentionedTopics.map((topic) => ({
+  const topicsData = report.report.mostMentionedTopics.map((topic) => ({
     name: topic.topic,
     value: Number.parseInt(topic.percentage)
   }));
 
   // Update the emotionalToneData to include emoji mappings
-  const emotionalToneData = reportData.report.emotionalTone.map((tone) => {
+  const emotionalToneData = report.report.emotionalTone.map((tone) => {
     // Add emoji mapping for each emotional tone
     let emoji = "🔍";
     switch (tone.tone) {
       case "Joy":
+      case "joy":
         emoji = "😊";
         break;
       case "Trust":
+      case "trust":
         emoji = "🤝";
         break;
       case "Disgust":
+      case "disgust":
         emoji = "🤢";
         break;
       case "Anticipation":
+      case "anticipation":
         emoji = "🔮";
         break;
       case "Anger":
+      case "anger":
         emoji = "😡";
         break;
       default:
@@ -166,31 +244,20 @@ export default function Report() {
       emoji: emoji
     };
   });
-  const [progress, setProgress] = useState(0);
-  const [confidence, setConfidence] = useState(0);
 
-  useEffect(() => {
-    setProgress(Number.parseFloat(reportData.report.satisfactionScore) * 10);
-    setConfidence(Number.parseInt(reportData.report.confidenceLevel));
-  }, [reportData]);
   return (
-    <div className="min-h-screen bg-black text-white p-6   w-full">
+    <div className="min-h-screen bg-black text-white p-6 w-full">
       {/* Header */}
-
       <div className="mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">
           FeedWise AI Analysis Report
         </h1>
         <div className="flex items-center mt-2">
           <h2 className="text-xl font-semibold text-gray-200">
-            {reportData.productName}
+            {report.productName}
           </h2>
-          <Badge className="ml-3 bg-indigo-600">
-            {reportData.productCategory}
-          </Badge>
-          <Badge className="ml-2 bg-purple-700">
-            {reportData.countryOfSale}
-          </Badge>
+          <Badge className="ml-3 bg-indigo-600">{report.productCategory}</Badge>
+          <Badge className="ml-2 bg-purple-700">{report.countryOfSale}</Badge>
         </div>
       </div>
 
@@ -200,7 +267,7 @@ export default function Report() {
           <div className="flex items-center justify-between">
             <h3 className="text-gray-400 font-medium">Satisfaction Score</h3>
             <span className="text-2xl font-bold text-cyan-400">
-              {reportData.report.satisfactionScore}
+              {report.report.satisfactionScore}
             </span>
           </div>
 
@@ -219,7 +286,7 @@ export default function Report() {
           <div className="flex items-center justify-between">
             <h3 className="text-gray-400 font-medium">Confidence Level</h3>
             <span className="text-2xl font-bold text-purple-400">
-              {reportData.report.confidenceLevel}
+              {report.report.confidenceLevel}
             </span>
           </div>
 
@@ -243,19 +310,19 @@ export default function Report() {
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-emerald-500 mr-2" />
                 <span className="text-sm font-medium text-emerald-400">
-                  Positive: {reportData.report.positive}
+                  Positive: {report.report.positive}
                 </span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-indigo-500 mr-2" />
                 <span className="text-sm font-medium text-indigo-400">
-                  Neutral: {reportData.report.neutral}
+                  Neutral: {report.report.neutral}
                 </span>
               </div>
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-red-500 mr-2" />
                 <span className="text-sm font-medium text-red-400">
-                  Negative: {reportData.report.negative}
+                  Negative: {report.report.negative}
                 </span>
               </div>
             </div>
@@ -345,7 +412,7 @@ export default function Report() {
             </h3>
           </div>
           <div className="space-y-4">
-            {reportData.report.trendingPositive.map((item, index) => (
+            {report.report.trendingPositive.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -370,7 +437,7 @@ export default function Report() {
             </h3>
           </div>
           <div className="space-y-4">
-            {reportData.report.trendingNegative.map((item, index) => (
+            {report.report.trendingNegative.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -394,7 +461,7 @@ export default function Report() {
           Emotional Tone Analysis
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4  border-red-500">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {emotionalToneData.map((item, index) => (
               <div
                 key={index}
@@ -410,7 +477,7 @@ export default function Report() {
               </div>
             ))}
           </div>
-          <div className="h-80  border-red-500 ">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart
                 cx="50%"
@@ -483,7 +550,7 @@ export default function Report() {
               </h3>
             </div>
             <ul className="space-y-3">
-              {reportData.report.suggestions.map((suggestion, index) => (
+              {report.report.suggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   className="flex items-start p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -507,7 +574,7 @@ export default function Report() {
                   </h4>
                 </div>
                 <ul className="space-y-2">
-                  {reportData.report.recommendedActions.positive.map(
+                  {report.report.recommendedActions.positive.map(
                     (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-green-500">
@@ -526,7 +593,7 @@ export default function Report() {
                   <h4 className="font-medium text-blue-300">Neutral Actions</h4>
                 </div>
                 <ul className="space-y-2">
-                  {reportData.report.recommendedActions.neutral.map(
+                  {report.report.recommendedActions.neutral.map(
                     (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-blue-500">
@@ -545,7 +612,7 @@ export default function Report() {
                   <h4 className="font-medium text-red-300">Negative Actions</h4>
                 </div>
                 <ul className="space-y-2">
-                  {reportData.report.recommendedActions.negative.map(
+                  {report.report.recommendedActions.negative.map(
                     (action, index) => (
                       <li key={index} className="flex items-start">
                         <div className="flex-shrink-0 mr-2 text-red-500">•</div>
@@ -568,7 +635,7 @@ export default function Report() {
               </h3>
             </div>
             <ul className="space-y-3">
-              {reportData.report.customerComplaints.map((complaint, index) => (
+              {report.report.customerComplaints.map((complaint, index) => (
                 <li
                   key={index}
                   className="flex items-start p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -599,7 +666,7 @@ export default function Report() {
           </h3>
         </div>
         <ul className="space-y-3">
-          {reportData.report.featureRequests.map((request, index) => (
+          {report.report.featureRequests.map((request, index) => (
             <li
               key={index}
               className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
@@ -620,9 +687,8 @@ export default function Report() {
       <div className="text-center text-gray-500 text-sm mt-12">
         <p>
           Generated by FeedWise AI • Confidence Level:{" "}
-          {reportData.report.confidenceLevel}
+          {report.report.confidenceLevel}
         </p>
-        <p className="mt-1">Report ID: {reportData._id}</p>
       </div>
     </div>
   );

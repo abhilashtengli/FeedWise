@@ -49,16 +49,21 @@ export function ChatInput({
     try {
       // In a real app, you would send all formData fields to your backend
       console.log("Submitting data:", formData);
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const response = await axios.post(baseUrl + "/gpt", formData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+      const reportData = response.data.data;
+      console.log(
+        "ReportData : of chat-input",
+        reportData,
+        "reportId",
+        reportData.report._id
+      );
 
-      console.log("Response :", response.data.data);
-      router.push(`/report/${1234}`);
-      setIsLoading(false);
+      router.push(`/report/${reportData.report._id}`);
 
       setFormData({
         productName: "",
@@ -66,6 +71,7 @@ export function ChatInput({
         countryOfSale: "",
         message: ""
       });
+      setTimeout(() => setIsLoading(false), 100);
     } catch (error) {
       toast("Error: Failed to submit review. Please try again." + error);
       setIsLoading(false);

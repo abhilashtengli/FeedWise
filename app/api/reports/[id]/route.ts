@@ -1,8 +1,8 @@
-// import authOptions from "@/lib/auth";
+import authOptions from "@/lib/auth";
 import connectDB from "@/lib/database";
 import Report from "@/models/Reports";
 import mongoose from "mongoose";
-// import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -12,15 +12,15 @@ export async function GET(
   await connectDB();
 
   try {
-    // const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
 
-    // if (!session) {
-    //   return NextResponse.json({
-    //     data: {
-    //       message: "Please login!"
-    //     }
-    //   });
-    // }
+    if (!session) {
+      return NextResponse.json({
+        data: {
+          message: "Please login!"
+        }
+      });
+    }
     const { id } = await params;
     console.log(id);
 

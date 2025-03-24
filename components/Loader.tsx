@@ -1,16 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { RefreshCcw } from "lucide-react";
 
 export default function CircularSpringLoader() {
   return (
-    <div className="flex flex-col gap-y-8 border  h-screen w-full items-center justify-center bg-black">
-      <motion.div
-        className="w-12 h-12 border-4 border-blue-600  border-t-transparent rounded-full animate-spin"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      />
+    <div className="flex flex-col gap-y-8 h-screen w-full items-center justify-center bg-black">
+      <RefreshCcw className="h-12 w-12 text-indigo-500 animate-spin" />
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
