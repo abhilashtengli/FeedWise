@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
     const userId = session.user.id;
     const objectId = new mongoose.Types.ObjectId(userId);
 
-    const reports = await Report.find({ user: objectId });
+    const reports = await Report.find({
+      user: objectId
+    }).select("_id productName createdAt");
 
     if (!reports) {
       return NextResponse.json({

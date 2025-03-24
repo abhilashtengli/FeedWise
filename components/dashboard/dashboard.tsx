@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChatInput } from "./chat-input";
 import { SessionProvider } from "next-auth/react";
+import CircularSpringLoader from "../Loader";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
@@ -129,8 +130,8 @@ export default function Dashboard() {
                 <ChatInput setIsLoading={setIsLoading} />
               </SessionProvider>
             </motion.div>
-          : <div className="border h-full  grid place-content-center text-3xl">
-              Please wait, product reviews are being analysed...
+          : <div className="">
+              <CircularSpringLoader />
             </div>}
       </main>
     </div>

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Navbar } from "@/components/navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { SessionProvider } from "next-auth/react";
 
 export default function ClientLayout({
   children
@@ -17,34 +18,36 @@ export default function ClientLayout({
   const isDashboard = pathname === "/";
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-screen">
-        {!isAuthPage && (
-          <div className="w-[18%] h-full fixed left-0 top-0">
-            <AppSidebar />
-          </div>
-        )}
-
-        <div
-          className={`h-full ${
-            isAuthPage ? "w-full" : "ml-[18%] w-[82%]"
-          } flex flex-col`}
-        >
+    <SessionProvider>
+      <SidebarProvider>
+        <div className="flex h-screen w-screen">
           {!isAuthPage && (
-            <div className="h-[8%] w-full sticky top-0 shadow-md z-10">
-              <Navbar />
+            <div className="w-[18%] h-full fixed left-0 top-0">
+              <AppSidebar />
             </div>
           )}
 
           <div
-            className={` w-full h-full ${
-              isDashboard ? "overflow-hidden" : "overflow-auto"
-            }`}
+            className={`h-full ${
+              isAuthPage ? "w-full" : "ml-[18%] w-[82%]"
+            } flex flex-col`}
           >
-            {children}
+            {!isAuthPage && (
+              <div className="h-[8%] w-full sticky top-0 shadow-md z-10">
+                <Navbar />
+              </div>
+            )}
+
+            <div
+              className={` w-full h-full ${
+                isDashboard ? "overflow-hidden" : "overflow-auto"
+              }`}
+            >
+              {children}
+            </div>
           </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </SessionProvider>
   );
 }
