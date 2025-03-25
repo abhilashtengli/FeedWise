@@ -68,8 +68,9 @@ export function AppSidebar() {
   useEffect(() => {
     if (status === "authenticated") {
       fetchReports();
-
-      // Clean up interval on component unmount or session change
+    }
+    if (status === "authenticated" && pathname.startsWith("/report")) {
+      fetchReports();
     } else if (status === "unauthenticated") {
       setLoading(false);
     }
@@ -101,7 +102,9 @@ export function AppSidebar() {
   // Handle report click
   const handleReportClick = (reportId: string) => {
     setActiveReport(reportId);
-    router.push(`/report/${reportId}`);
+    setTimeout(() => {
+      router.replace(`/report/${reportId}`); // Navigates after a short delay
+    }, 10);
   };
 
   // Animation variants

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ClientLayout from "@/components/ClientLayout"; // New client component
 import { Toaster } from "sonner";
+import ClientLayout from "@/components/ClientLayout"; // Move import AFTER fonts
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,21 +16,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Feedwise",
-  description: "Feedwise help to analyse the feedbacks or reviews of an product"
+  description: "Feedwise helps to analyze product feedback and reviews."
 };
 
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-black text-white`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark bg-black text-white`}>
         <Toaster />
-        <ClientLayout>{children}</ClientLayout> {/* Use Client Component */}
+        <ClientLayout>{children}</ClientLayout> {/* Now it works correctly */}
       </body>
     </html>
   );

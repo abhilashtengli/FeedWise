@@ -12,8 +12,8 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  // Prevents Next.js hydration issues
 
-  // Hide Navbar & Sidebar on authentication pages
   const isAuthPage = ["/signin", "/signup"].includes(pathname);
   const isDashboard = pathname === "/";
 
@@ -22,11 +22,10 @@ export default function ClientLayout({
       <SidebarProvider>
         <div className="flex h-screen w-screen">
           {!isAuthPage && (
-            <div className="w-[18%] h-full fixed left-0 top-0">
+            <div className="w-[18%] h-full fixed left-0 top-0 z-20 bg-black">
               <AppSidebar />
             </div>
           )}
-
           <div
             className={`h-full ${
               isAuthPage ? "w-full" : "ml-[18%] w-[82%]"
@@ -37,9 +36,8 @@ export default function ClientLayout({
                 <Navbar />
               </div>
             )}
-
             <div
-              className={` w-full h-full ${
+              className={`w-full h-full ${
                 isDashboard ? "overflow-hidden" : "overflow-auto"
               }`}
             >
