@@ -13,25 +13,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
-
   return (
     <div>
       <header className="flex h-full  border-b border-border items-center justify-between px-4 py-2">
-        {/* // initial={{ y: -20, opacity: 0 }}
-    // animate={{ y: 0, opacity: 1 }}
-    // transition={{ duration: 0.3 }} */}
-        <motion.div className="flex items-center gap-2">
-          {/* // initial={{ opacity: 0, x: -20 }}
-      // animate={{ opacity: 1, x: 0 }}
-      // transition={{ delay: 0.2, duration: 0.3 }} */}
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
+        <div className="flex items-center gap-2">
+          <div>
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-          </motion.div>
+          </div>
           <motion.div
             whileHover={{ scale: 1.1, rotate: -5 }}
             whileTap={{ scale: 0.95 }}
@@ -40,12 +30,9 @@ export function Navbar() {
               <Plus className="h-5 w-5" />
             </Button>
           </motion.div>
-        </motion.div>
+        </div>
 
-        <motion.div className="font-medium">
-          {/* // initial={{ y: -20, opacity: 0 }}
-      // animate={{ y: 0, opacity: 1 }}
-      // transition={{ delay: 0.3, duration: 0.3 }} */}
+        <div className="font-medium">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <motion.div
@@ -54,10 +41,7 @@ export function Navbar() {
               >
                 <Button variant="ghost" className="gap-2">
                   Feedwise
-                  <motion.div
-                  // animate={{ rotate: [0, 180] }}
-                  // transition={{ duration: 0.5, delay: 1 }}
-                  >
+                  <div>
                     <svg
                       width="10"
                       height="6"
@@ -73,7 +57,7 @@ export function Navbar() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </motion.div>
+                  </div>
                 </Button>
               </motion.div>
             </DropdownMenuTrigger>
@@ -82,44 +66,23 @@ export function Navbar() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </motion.div>
+        </div>
 
-        <motion.div className="flex items-center">
-          {/* // initial={{ opacity: 0, x: 20 }}
-      // animate={{ opacity: 1, x: 0 }}
-      // transition={{ delay: 0.4, duration: 0.3 }} */}
-          <motion.div
-          // initial={{ opacity: 0 }}
-          // animate={{ opacity: 1 }}
-          // transition={{ delay: 0.5, duration: 0.3 }}
-          // whileHover={{ scale: 1.05 }}
-          // whileTap={{ scale: 0.95 }}
-          >
+        <div className="flex items-center">
+          <div>
             <Button variant="ghost" size="sm" className="mr-2">
               Temporary
             </Button>
-          </motion.div>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <motion.div
-              // initial={{ scale: 0 }}
-              // animate={{ scale: 1 }}
-              // transition={{
-              //   delay: 0.6,
-              //   duration: 0.5,
-              //   type: "spring",
-              //   stiffness: 400,
-              //   damping: 10
-              // }}
-              // whileHover={{ scale: 1.1 }}
-              // whileTap={{ scale: 0.9 }}
-              >
+              <div>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-600 text-white">
                     JD
                   </div>
                 </Button>
-              </motion.div>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
@@ -146,7 +109,7 @@ export function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </motion.div>
+        </div>
       </header>
     </div>
   );

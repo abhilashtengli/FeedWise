@@ -4,14 +4,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 // import ClientLayout from "@/components/ClientLayout";
-import { headers } from "next/headers";
-import { Navbar } from "@/components/navbar";
-import connectDB from "@/lib/database";
-import { getServerSession } from "next-auth";
-import authOptions from "@/lib/auth";
-import axios from "axios";
-import { baseUrl } from "@/lib/config";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
+import { cookies } from "next/headers";
+import MainAppSidebar from "@/components/sidebar/mainAppSidbar";
+import MainNavBar from "@/components/navbar/MainNavBar";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,26 +29,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = (await headers()).get("x-pathname") || "";
+  const pathname = (await cookies()).get("pathname")?.value || ""; // ✅ Read pathname from cookies instead
   const isAuthPage = ["/signin", "/signup"].includes(pathname);
-   await connectDB();
-  const session = await getServerSession(authOptions);
-  const token = session?.accessToken;
 
-   let reports = [];
-  if (session?.accessToken) {
-    try {
-      const response = await axios.get(baseUrl + "/reports", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      reports = response.data?.data?.reports;
-    } catch (error) {
-      console.error("Failed to fetch reports:", error);
-    }
-  }
-
+  // }
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -63,7 +43,7 @@ export default async function RootLayout({
         <div className="flex h-screen w-screen">
           {!isAuthPage && (
             <div className="w-[18%] h-full fixed left-0 top-0 z-20 bg-black">
-              <AppSidebar initialReports={reports} session={session} />
+              <MainAppSidebar />
             </div>
           )}
           <div
@@ -73,7 +53,7 @@ export default async function RootLayout({
           >
             {!isAuthPage && (
               <div className="h-[8%] w-full sticky top-0 shadow-md z-10">
-                <Navbar />
+               <MainNavBar/>
               </div>
             )}
             <div className="w-full h-full overflow-auto">{children}</div>

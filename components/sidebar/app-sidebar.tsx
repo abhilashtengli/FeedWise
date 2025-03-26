@@ -10,38 +10,44 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarProvider,
+  SidebarProvider
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { baseUrl } from "@/lib/config";
 import axios from "axios";
 import { ReportListSkeleton } from "../reportListSkeleton";
-import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 
-// Define the report type based on the API response
 interface Report {
   _id: string;
   productName: string;
   createdAt: string;
 }
+
 interface AppSidebarProps {
   initialReports?: Report[];
-    session?: Session | null;
-
 }
 
-export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
+export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [activeReport, setActiveReport] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [initialLoad, setInitialLoad] = useState(true);
-  const pathname = usePathname();
-
-
+  const { data: session, status } = useSession();
+  // const pathname = usePathname();
   const router = useRouter();
 
-  // Function to fetch reports
+  useEffect(() => {
+    const storedReports = localStorage.getItem("reports");
+    if (storedReports) {
+      setReports(JSON.parse(storedReports));
+      setLoading(false);
+    } else {
+      fetchReports();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const fetchReports = async () => {
     try {
       setLoading(true);
@@ -50,11 +56,9 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
         return;
       }
 
-      const token = session.accessToken;
-
-      const response = await axios.get(baseUrl + "/reports", {
+      const response = await axios.get(`${baseUrl}/reports`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${session.accessToken}`
         }
       });
 
@@ -63,59 +67,29 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
         localStorage.setItem(
           "reports",
           JSON.stringify(response.data.data.reports)
-        ); // ✅ Save new reports to cache
+        );
       } else {
         console.error("Unexpected API response structure:", response.data);
         setReports([]);
       }
-
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching reports:", error);
       setReports([]);
-      setLoading(false);
     } finally {
       setLoading(false);
-      setInitialLoad(false);
     }
   };
-   useEffect(() => {
-    if (initialReports.length === 0 && session) {
-      // Fetch reports client-side if no initial data
-      fetchReports();
-    }
-  }, [session]);
-
-  // Fetch reports when session changes
-  useEffect(() => {
-    if (initialLoad && status === "authenticated") {
-      fetchReports();
-    } else if (status === "unauthenticated") {
-      setLoading(false);
-    }
-  }, [initialLoad, status]);
-
-  useEffect(() => {
-    if (pathname.startsWith("/report") && status === "authenticated") {
-      fetchReports();
-    } else if (status === "unauthenticated") {
-      setLoading(false);
-    }
-  }, [pathname, status]);
 
   // useEffect(() => {
-  //   if (status === "authenticated") {
+  //   if (initialReports.length === 0 && status === "authenticated") {
   //     fetchReports();
   //   }
-  //   if (status === "authenticated" && pathname.startsWith("/report")) {
-  //     fetchReports();
-  //   } else if (status === "unauthenticated") {
-  //     setLoading(false);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [status, session, pathname]);
 
-  // Function to check if a date is today
+  //   // if (pathname.startsWith("/report")) {
+  //   //   fetchReports();
+  //   // }
+  // }, [status, pathname]);
+
   const isToday = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -125,11 +99,11 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
       date.getFullYear() === today.getFullYear()
     );
   };
+
   const sortedReports = [...reports].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  // Group reports into "Today" and "Past"
   const todayReports = sortedReports.filter((report) =>
     isToday(report.createdAt)
   );
@@ -137,7 +111,6 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
     (report) => !isToday(report.createdAt)
   );
 
-  // Handle report click
   const handleReportClick = (reportId: string) => {
     setActiveReport(reportId);
     setTimeout(() => {
@@ -145,7 +118,6 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
     }, 10);
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -158,187 +130,185 @@ export function AppSidebar({ initialReports = [], session }: AppSidebarProps) {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
+    hidden: { opacity: 0, x: -10 },
     show: { opacity: 1, x: 0 }
   };
 
   const sectionVariants = {
-    hidden: { opacity: 0, y: -5 },
+    hidden: { opacity: 0, y: -2 },
     show: { opacity: 1, y: 0 }
   };
 
   return (
     <SidebarProvider>
-        <div>
-          <Sidebar className="border border-border w-[18%] bg-black">
-            <SidebarHeader>
-              <motion.div className="flex items-center gap-2 p-3">
-                <motion.div>
-                  <MessageSquare className="h-5 w-5" />
-                </motion.div>
-                <motion.span className="font-semibold">Feedwise</motion.span>
+      <div>
+        <Sidebar className="border border-border w-[18%] bg-black">
+          <SidebarHeader>
+            <motion.div className="flex items-center gap-2 p-3">
+              <motion.div>
+                <MessageSquare className="h-5 w-5" />
               </motion.div>
+              <motion.span className="font-semibold">Feedwise</motion.span>
+            </motion.div>
 
-              <motion.div className="flex items-center gap-2 p-3">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full"
-                >
-                  <Link href="/">
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start gap-2 text-sm"
-                    >
-                      <Plus className="h-4 w-4" />
-                      New Analysis
-                    </Button>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </SidebarHeader>
-
-            <SidebarContent>
-              <motion.nav
-                className={cn(
-                  "flex flex-col gap-1 p-2",
-                  status === "loading" || loading
-                    ? "overflow-hidden h-full"
-                    : "overflow-auto"
-                )}
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
+            <motion.div className="flex items-center gap-2 p-3">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full"
               >
-                {status === "loading" || loading ? (
-                  <div className="flex justify-center items-start text-muted-foreground  h-full max-h-full overflow-hidden">
-                    <ReportListSkeleton todayCount={4} pastCount={10} />
-                  </div>
-                ) : status === "unauthenticated" ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Please sign in to view reports
-                  </div>
-                ) : (
-                  <>
-                    {/* Today's reports */}
-                    {todayReports.length > 0 && (
-                      <>
-                        <motion.div
-                          className="text-xs uppercase text-muted-foreground font-medium tracking-wider px-2 pt-4 pb-2"
-                          variants={sectionVariants}
-                        >
-                          Today
-                        </motion.div>
-                        {todayReports.map((report) => (
-                          <motion.button
-                            key={report._id}
-                            variants={itemVariants}
-                            whileHover={{
-                              x: 3,
-                              backgroundColor: "rgba(255, 255, 255, 0.06)",
-                              transition: { duration: 0.2 }
-                            }}
-                            whileTap={{ scale: 0.98 }}
-                            className={cn(
-                              "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
-                              activeReport === report._id
-                                ? "bg-white/10 text-white"
-                                : "text-white/80 hover:text-white"
-                            )}
-                            onClick={() => handleReportClick(report._id)}
-                          >
-                            <motion.div
-                              initial={{ rotate: 0 }}
-                              whileHover={{ rotate: 5 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <FileText className="h-4 w-4 shrink-0" />
-                            </motion.div>
-                            <span className="truncate text-left">
-                              {report.productName}
-                            </span>
-                          </motion.button>
-                        ))}
-                      </>
-                    )}
-
-                    {/* Past reports */}
-                    {pastReports.length > 0 && (
-                      <>
-                        <motion.div
-                          className="text-xs uppercase text-muted-foreground font-medium tracking-wider px-2 pt-4 pb-2"
-                          variants={sectionVariants}
-                        >
-                          Past
-                        </motion.div>
-                        {pastReports.map((report) => (
-                          <motion.button
-                            key={report._id}
-                            variants={itemVariants}
-                            whileHover={{
-                              x: 3,
-                              backgroundColor: "rgba(255, 255, 255, 0.06)",
-                              transition: { duration: 0.2 }
-                            }}
-                            whileTap={{ scale: 0.98 }}
-                            className={cn(
-                              "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
-                              activeReport === report._id
-                                ? "bg-white/10 text-white"
-                                : "text-white/80 hover:text-white"
-                            )}
-                            onClick={() => handleReportClick(report._id)}
-                          >
-                            <motion.div
-                              initial={{ rotate: 0 }}
-                              whileHover={{ rotate: 5 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <FileText className="h-4 w-4 shrink-0" />
-                            </motion.div>
-                            <span className="truncate text-left">
-                              {report.productName}
-                            </span>
-                          </motion.button>
-                        ))}
-                      </>
-                    )}
-
-                    {reports.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No reports found
-                      </div>
-                    )}
-                  </>
-                )}
-              </motion.nav>
-            </SidebarContent>
-
-            <SidebarFooter>
-              <motion.div className="p-3">
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+                <Link href="/">
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2 text-sm"
                   >
-                    <motion.div>
-                      <Sparkles className="h-4 w-4" />
-                    </motion.div>
-                    <div className="flex flex-col items-start">
-                      <span>Upgrade plan</span>
-                      <span className="text-xs text-muted-foreground">
-                        More access to the best models
-                      </span>
-                    </div>
+                    <Plus className="h-4 w-4" />
+                    New Analysis
                   </Button>
-                </motion.div>
+                </Link>
               </motion.div>
-            </SidebarFooter>
-          </Sidebar>
+            </motion.div>
+          </SidebarHeader>
+
+          <SidebarContent>
+            <motion.nav
+              className={cn(
+                "flex flex-col gap-1 p-2",
+                status === "loading" || loading
+                  ? "overflow-hidden h-full"
+                  : "overflow-auto"
+              )}
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+            >
+              {status === "loading" || loading ? (
+                <div className="flex justify-center items-start text-muted-foreground h-full max-h-full overflow-hidden">
+                  <ReportListSkeleton todayCount={4} pastCount={10} />
+                </div>
+              ) : status === "unauthenticated" ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Please sign in to view reports
+                </div>
+              ) : (
+                <>
+                  {todayReports.length > 0 && (
+                    <>
+                      <motion.div
+                        className="text-xs uppercase text-muted-foreground font-medium tracking-wider px-2 pt-4 pb-2"
+                        variants={sectionVariants}
+                      >
+                        Today
+                      </motion.div>
+                      {todayReports.map((report) => (
+                        <motion.button
+                          key={report._id}
+                          variants={itemVariants}
+                          whileHover={{
+                            x: 3,
+                            backgroundColor: "rgba(255, 255, 255, 0.06)",
+                            transition: { duration: 0.2 }
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                          className={cn(
+                            "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
+                            activeReport === report._id
+                              ? "bg-white/10 text-white"
+                              : "text-white/80 hover:text-white"
+                          )}
+                          onClick={() => handleReportClick(report._id)}
+                        >
+                          <motion.div
+                            initial={{ rotate: 0 }}
+                            whileHover={{ rotate: 5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <FileText className="h-4 w-4 shrink-0" />
+                          </motion.div>
+                          <span className="truncate text-left">
+                            {report.productName}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </>
+                  )}
+
+                  {pastReports.length > 0 && (
+                    <>
+                      <motion.div
+                        className="text-xs uppercase text-muted-foreground font-medium tracking-wider px-2 pt-4 pb-2"
+                        variants={sectionVariants}
+                      >
+                        Past
+                      </motion.div>
+                      {pastReports.map((report) => (
+                        <motion.button
+                          key={report._id}
+                          variants={itemVariants}
+                          whileHover={{
+                            x: 3,
+                            backgroundColor: "rgba(255, 255, 255, 0.06)",
+                            transition: { duration: 0.2 }
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                          className={cn(
+                            "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors",
+                            activeReport === report._id
+                              ? "bg-white/10 text-white"
+                              : "text-white/80 hover:text-white"
+                          )}
+                          onClick={() => handleReportClick(report._id)}
+                        >
+                          <motion.div
+                            initial={{ rotate: 0 }}
+                            whileHover={{ rotate: 5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <FileText className="h-4 w-4 shrink-0" />
+                          </motion.div>
+                          <span className="truncate text-left">
+                            {report.productName}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </>
+                  )}
+
+                  {reports.length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No reports found
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.nav>
+          </SidebarContent>
+
+          <SidebarFooter>
+            <motion.div className="p-3">
+              <motion.div
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2 text-sm"
+                >
+                  <motion.div>
+                    <Sparkles className="h-4 w-4" />
+                  </motion.div>
+                  <div className="flex flex-col items-start">
+                    <span>Upgrade plan</span>
+                    <span className="text-xs text-muted-foreground">
+                      More access to the best models
+                    </span>
+                  </div>
+                </Button>
+              </motion.div>
+            </motion.div>
+          </SidebarFooter>
+        </Sidebar>
       </div>
-      </SidebarProvider>
+    </SidebarProvider>
   );
 }

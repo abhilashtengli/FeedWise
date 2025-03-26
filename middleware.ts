@@ -4,14 +4,15 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  console.log("middleware execution started");
+  // console.log("middleware execution started");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
     cookieName: "next-auth.session-token"
   });
-  console.log("Token : " + token);
-  console.log("middleware execution ended");
+  // console.log("Token : " + token);
+  // console.log("middleware execution ended");
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
 

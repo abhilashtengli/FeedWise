@@ -21,11 +21,11 @@ export async function AppSidebarServer() {
         Authorization: `Bearer ${token}`
       }
     });
-    if (!response.data?.data?.reports) {
+    if (!response.data?.data) {
       return <AppSidebar initialReports={[]} />;
     }
 
-    const reports = response.data?.data?.reports;
+    const reports = response.data?.data;
 
     return <AppSidebar initialReports={reports} />;
   } catch (error) {
