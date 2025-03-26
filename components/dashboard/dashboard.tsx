@@ -3,16 +3,23 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChatInput } from "./chat-input";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import CircularSpringLoader from "../Loader";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
+  const { status } = useSession();
 
   // Force dark mode
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
+  useEffect(
+    () => {
+      document.documentElement.classList.add("dark");
+      if (status !== "loading") {
+        setIsLoading(false);
+      }
+    },
+    [status]
+  );
 
   // Animation variants
   const containerVariants = {
