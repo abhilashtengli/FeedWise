@@ -11,12 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { useState } from "react";
+import axios from "axios";
 
 export function Navbar() {
+  const [user, setUser] = useState();
+  const [subDetails, setSubDetails] = useState();
+
+  const fetchUser = () => {
+    const response = axios.get();
+  };
   return (
     <div>
-      <header className="flex h-full  border-b border-border items-center justify-between px-4 py-2">
-        <div className="flex items-center gap-2">
+      <header className="flex  items-center justify-between h-full  border-b border-border  px-4 py-2">
+        <div className="flex items-center gap-2 invisible">
           <div>
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
@@ -32,7 +41,7 @@ export function Navbar() {
           </motion.div>
         </div>
 
-        <div className="font-medium">
+        <div className="font-medium  justify-self-center ">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <motion.div
@@ -62,13 +71,15 @@ export function Navbar() {
               </motion.div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem>New Analysis</DropdownMenuItem>
+              <Link href="/">
+                <DropdownMenuItem>New Analysis</DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>Settings</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center justify-self-end  ">
           <div>
             <Button variant="ghost" size="sm" className="mr-2">
               Temporary

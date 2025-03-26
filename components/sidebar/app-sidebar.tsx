@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, MessageSquare, Plus, Sparkles } from "lucide-react";
+import {
+  FileText,
+  MessageSquare,
+  Plus,
+  Search,
+  Sparkles,
+  X
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,8 +41,11 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
   const [activeReport, setActiveReport] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { data: session, status } = useSession();
-  // const pathname = usePathname();
   const router = useRouter();
+
+  // Search state
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const storedReports = localStorage.getItem("reports");
@@ -45,7 +55,7 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
     } else {
       fetchReports();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchReports = async () => {
@@ -80,16 +90,6 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
     }
   };
 
-  // useEffect(() => {
-  //   if (initialReports.length === 0 && status === "authenticated") {
-  //     fetchReports();
-  //   }
-
-  //   // if (pathname.startsWith("/report")) {
-  //   //   fetchReports();
-  //   // }
-  // }, [status, pathname]);
-
   const isToday = (dateString: string) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -110,6 +110,13 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
   const pastReports = sortedReports.filter(
     (report) => !isToday(report.createdAt)
   );
+
+  // Filter reports based on search query
+  const filteredReports = searchQuery
+    ? sortedReports.filter((report) =>
+        report.productName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   const handleReportClick = (reportId: string) => {
     setActiveReport(reportId);
@@ -144,12 +151,78 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
       <div>
         <Sidebar className="border border-border w-[18%] bg-black">
           <SidebarHeader>
-            <motion.div className="flex items-center gap-2 p-3">
-              <motion.div>
-                <MessageSquare className="h-5 w-5" />
-              </motion.div>
-              <motion.span className="font-semibold">Feedwise</motion.span>
+            <motion.div className="flex items-center justify-between p-3 ">
+              <div className="flex items-center gap-2">
+                <motion.div>
+                  <MessageSquare className="h-5 w-5" />
+                </motion.div>
+                <Link href="/">
+                  <motion.span className="font-semibold">Feedwise</motion.span>
+                </Link>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={() => setShowSearch(!showSearch)}
+              >
+                <Search className="h-4 w-4" />
+              </Button>
             </motion.div>
+
+            {showSearch && (
+              <div className="px-3 py-2 relative">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search reports..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-md border border-border bg-background px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-1 top-1/2 h-5 w-5 -translate-y-1/2"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+
+                {searchQuery && (
+                  <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-auto rounded-md border border-border bg-background p-1 shadow-md">
+                    {filteredReports.length > 0 ? (
+                      filteredReports.map((report) => (
+                        <button
+                          key={report._id}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent",
+                            activeReport === report._id ? "bg-accent/50" : ""
+                          )}
+                          onClick={() => {
+                            handleReportClick(report._id);
+                            setShowSearch(false);
+                            setSearchQuery("");
+                          }}
+                        >
+                          <FileText className="h-4 w-4 shrink-0" />
+                          <span className="truncate text-left">
+                            {report.productName}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-2 py-3 text-center text-sm text-muted-foreground">
+                        No matching reports found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <motion.div className="flex items-center gap-2 p-3">
               <motion.div

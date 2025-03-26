@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
     const savedUser = await newUser.save();
+
     const subscription = new Subscription({
       user: newUser._id,
       plan: "free",

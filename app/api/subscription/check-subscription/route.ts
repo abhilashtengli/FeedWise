@@ -18,7 +18,7 @@ export async function GET() {
 
     await Subscription.updateMany(
       {
-        _id: { $in: expiredSubscriptions.map((sub) => sub._id) }
+        _id: { $in: expiredSubscriptions.map(sub => sub._id) }
       },
       { $set: { status: "expired" } }
     );
