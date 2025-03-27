@@ -75,7 +75,7 @@ const Signin = () => {
   return (
     <>
       <div className="flex justify-center items-center min-h-screen ">
-        <Card className="relative w-full max-w-xs border rounded-3xl py-8 shadow-glow mb-8 bg-black/50  border-gray-800 backdrop-blur-lg shadow-xl p-6 text-white bg-gradient-to-tr from-black to-zinc-900">
+        <Card className="relative w-full max-w-xs border rounded-3xl py-8 mb-8 bg-black/50  border-gray-800 backdrop-blur-lg shadow-xl p-6 text-white bg-gradient-to-tr from-black to-zinc-900">
           <div className=""></div>
           <CardHeader>
             <CardTitle className="text-2xl font-medium text-center tracking-wider">
