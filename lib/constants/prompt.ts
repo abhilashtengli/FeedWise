@@ -6,6 +6,7 @@ const promptJsonValidation = `
 4. ONE space after colons
 5. Keep quotes consistent
 6. ENSURE the response includes ALL reports without truncation.
+7. Ensure that responses for all STEPs are generated. This is REQUIRED.
 `;
 
 export const promptBatch01 = (
@@ -40,7 +41,7 @@ export const promptBatch01 = (
   5. Mandatory inclusion of all reports (empty if no data)
   
   # ACTION: Execution Phase
-  ## STEP 1: Sentiment Analysis (R1)
+  ## STEP 1: Sentiment Analysis (R1 *REQUIRED*)
   - Process: 
   a. Analyze each review with emotion detection
   b. Categorize as Positive/Neutral/Negative
@@ -51,7 +52,7 @@ export const promptBatch01 = (
   ↳ Verify sentiment consistency across similar phrases
   ↳ Sum must be 98% ±2%
     
-  ## STEP 2: Theme Extraction (R2)
+  ## STEP 2: Theme Extraction (R2 *REQUIRED*)
   - Process:
   a. Identify noun phrases and action verbs
   b. Cluster related terms (e.g., "slow delivery" = "Shipping Speed")
@@ -62,7 +63,7 @@ export const promptBatch01 = (
   ↳ Merge similar categories (e.g., "packaging" + "box condition")
   ↳ percentages represent relative weight of TOP topics only (sum may be <100%)
    
- ## STEP 3: Improvement Suggestions (R3)
+ ## STEP 3: Improvement Suggestions (R3 *REQUIRED*)
   - Process:
   a. Map complaints to potential solutions
   b. Prioritize all issues with 2≥% frequency
@@ -108,7 +109,7 @@ export const promptBatch02 = (
 4. Confidence threshold: 85% for all outputs
 
 # ACTION: Execution Phase
-## STEP 4: Satisfaction Scoring (R4)
+## STEP 4: Satisfaction Scoring (R4 *REQUIRED*)
 - Process:
   a. Convert ratings to 10-point scale
   b. Weighted average (70% ratings, 30% sentiment)
@@ -124,7 +125,7 @@ export const promptBatch02 = (
     "confidenceLevel": "87%"
   }
 
-## STEP 5: Trend Analysis (R5)
+## STEP 5: Trend Analysis (R5 *REQUIRED*)
 - Process:
   a. Compare monthly feedback clusters
   b. Identify >5% MoM changes
@@ -146,7 +147,7 @@ export const promptBatch02 = (
     ]
   }
 
-## STEP 6: Response Strategies (R6)
+## STEP 6: Response Strategies (R6 *REQUIRED*)
 - Process:
   a. Categorize feedback by sentiment
   b. Match to cultural response norms
@@ -255,7 +256,7 @@ export const promptBatch03 = (
 4. Minimum 3 mentions for inclusion
 
 # ACTION: Execution Phase
-## STEP 7: Complaint Extraction (R7)
+## STEP 7: Complaint Extraction (R7 *REQUIRED*)
 - Process:
   a. Extract verbatim complaint phrases
   b. Remove duplicates with fuzzy matching (85% similarity)
@@ -274,7 +275,7 @@ export const promptBatch03 = (
     ]
   }
 
-## STEP 8: Feature Requests (R8)
+## STEP 8: Feature Requests (R8 *REQUIRED*)  
 - Process:
   a. Identify improvement suggestions
   b. Group semantically similar requests
@@ -300,7 +301,7 @@ export const promptBatch03 = (
     ]
   }
 
-## STEP 9: Emotional Tone (R9)
+## STEP 9: Emotional Tone (R9 *REQUIRED*)
 - Process:
   a. Detect and report all 8 core emotions (Joy, Trust, Fear, Surprise, Anger, Disgust, Sadness, Anticipation)
   b. Calculate emotion intensity levels

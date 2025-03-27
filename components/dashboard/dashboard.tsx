@@ -44,8 +44,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className=" w-full h-full overflow-hidden  ">
-      <main className="relative  w-full h-full flex flex-col overflow-hidden">
+    <div className=" w-full h-full flex justify-center  overflow-hidden -mt-7">
+      <main className="relative  w-full flex flex-col overflow-hidden">
         {!isLoading
           ? <motion.div
               className="flex flex-1 flex-col items-center justify-center overflow-auto"

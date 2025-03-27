@@ -48,15 +48,11 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const storedReports = localStorage.getItem("reports");
-    if (storedReports) {
-      setReports(JSON.parse(storedReports));
-      setLoading(false);
-    } else {
+    if (status === "authenticated" && session?.accessToken) {
       fetchReports();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, session]);
 
   const fetchReports = async () => {
     try {
@@ -74,10 +70,6 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
 
       if (response.data?.data?.reports) {
         setReports(response.data.data.reports);
-        localStorage.setItem(
-          "reports",
-          JSON.stringify(response.data.data.reports)
-        );
       } else {
         console.error("Unexpected API response structure:", response.data);
         setReports([]);

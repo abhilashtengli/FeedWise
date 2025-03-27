@@ -141,12 +141,13 @@ export default function Report() {
       setError("No report ID provided");
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center ml-[18%] w-[82%]">
         <RefreshCcw className="h-12 w-12 text-indigo-500 animate-spin mb-4" />
         <h2 className="text-xl font-semibold mb-2">Loading Report</h2>
         <p className="text-gray-400">
@@ -246,7 +247,7 @@ export default function Report() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 w-full">
+    <div className="min-h-screen bg-black text-white p-6 ml-[18%] w-[82%]">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 bg-clip-text text-transparent">

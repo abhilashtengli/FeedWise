@@ -11,7 +11,7 @@ const MainNavBar = () => {
   return (
     <SessionProvider>
       {!isAuthPage &&
-        <div>
+        <div className="w-[82%] ml-[18%]">
           <Navbar />
         </div>}
     </SessionProvider>
