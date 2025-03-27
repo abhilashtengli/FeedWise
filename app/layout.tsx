@@ -40,7 +40,7 @@ export default async function RootLayout({
             <MainAppSidebar />
           </div>
           <div className="w-full">
-            <div className="h-[8%]  sticky top-0 shadow-md z-10">
+            <div className="h-[8%] fixed top-0 right-0 shadow-md z-10 w-full">
               <MainNavBar />
             </div>
 

@@ -7,16 +7,17 @@ import { usePathname } from "next/navigation";
 
 const MainAppSidebar = () => {
   const pathname = usePathname();
-  const isAuthPage = ["/signin", "/signup"].includes(pathname);
+  const isAuthPage = ["/", "/signin", "/signup"].includes(pathname);
 
   return (
     <div>
       <SidebarProvider>
         <SessionProvider>
-          {!isAuthPage &&
+          {!isAuthPage && (
             <div>
               <AppSidebar />
-            </div>}
+            </div>
+          )}
         </SessionProvider>
       </SidebarProvider>
     </div>

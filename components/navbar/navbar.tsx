@@ -54,7 +54,7 @@ export function Navbar() {
   };
   useEffect(() => {
     fetchUserAnsSubDetails();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
@@ -105,7 +105,7 @@ export function Navbar() {
               </motion.div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <Link href="/">
+              <Link href="/analyze-reviews">
                 <DropdownMenuItem>New Analysis</DropdownMenuItem>
               </Link>
               <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -113,11 +113,18 @@ export function Navbar() {
           </DropdownMenu>
         </div>
 
-        <div className="flex items-center justify-self-end  ">
+        <div className="flex items-center justify-self-end  space-x-2">
           <div>
-            <Button variant="ghost" size="sm" className="mr-2">
-              Temporary
-            </Button>
+            <span
+              className={`font-medium text-xs tracking-wider ${
+                subDetails.plan === "free"
+                  ? "text-purple-500"
+                  : "text-green-500"
+              }`}
+            >
+              {subDetails.plan.charAt(0).toUpperCase() +
+                subDetails.plan.slice(1).toLowerCase()}
+            </span>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

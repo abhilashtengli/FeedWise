@@ -51,7 +51,7 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
     if (status === "authenticated" && session?.accessToken) {
       fetchReports();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, session]);
 
   const fetchReports = async () => {
@@ -148,7 +148,7 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
                 <motion.div>
                   <MessageSquare className="h-5 w-5" />
                 </motion.div>
-                <Link href="/">
+                <Link href="/analyze-reviews">
                   <motion.span className="font-semibold">Feedwise</motion.span>
                 </Link>
               </div>
@@ -222,7 +222,7 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
                 whileTap={{ scale: 0.98 }}
                 className="w-full"
               >
-                <Link href="/">
+                <Link href="/analyze-reviews">
                   <Button
                     variant="outline"
                     className="w-full justify-start gap-2 text-sm"

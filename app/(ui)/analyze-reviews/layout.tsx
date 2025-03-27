@@ -1,5 +1,3 @@
-"use client"
-import { SessionProvider } from "next-auth/react";
 
 export default function ReportLayout({
   children
@@ -7,8 +5,8 @@ export default function ReportLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
+    <div className="h-screen overflow-hidden">
       {children}
-    </SessionProvider>
+    </div>
   );
 }

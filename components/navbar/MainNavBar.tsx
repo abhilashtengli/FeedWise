@@ -7,11 +7,11 @@ import { usePathname } from "next/navigation";
 
 const MainNavBar = () => {
   const pathname = usePathname();
-  const isAuthPage = ["/signin", "/signup"].includes(pathname);
+  const isAuthPage = ["/", "/signin", "/signup"].includes(pathname);
   return (
     <SessionProvider>
       {!isAuthPage &&
-        <div className="w-[82%] ml-[18%]">
+        <div className="w-[82%] ml-[18%] bg-black bg-opacity-65">
           <Navbar />
         </div>}
     </SessionProvider>
