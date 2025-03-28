@@ -36,7 +36,7 @@ export default async function RootLayout({
       >
         <Toaster />
         <div className="flex h-screen w-full justify-between">
-          <div className="w-[18%] h-full fixed left-0 top-0 z-20 bg-black">
+          <div className="w-[18%] h-full fixed left-0 top-0 z-20 ">
             <MainAppSidebar />
           </div>
           <div className="w-full">
