@@ -9,6 +9,7 @@ import {
   Search,
   LineChart
 } from "lucide-react";
+import BgBox from "./bg-box";
 
 const features = [
   {
@@ -69,45 +70,28 @@ export default function FeaturesSection() {
     }
   };
 
-  return (
-    <section id="features" className="relative py-24 bg-black">
+  return <section id="features" className="relative py-24 bg-black">
+      <div className="lg:block hidden">
+          <BgBox rowNum={5} />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
 
-      <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-        <div className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400"
-          >
+      <div className="container px-4 md:px-6 mx-auto max-w-6xl z-50">
+        <div className="text-center mb-16 z-50">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
             Powerful Features
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-xl text-white/70 max-w-2xl mx-auto"
-          >
-            Unlock the full potential of your product reviews with our advanced
-            AI tools
+          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }} className="text-xl text-white/70 max-w-2xl mx-auto">
+            Unlock the full potential of your product reviews with our advanced AI tools
           </motion.p>
         </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) =>
             <motion.div
               key={index}
               variants={itemVariants}
-              className="bg-black border border-white/10 rounded-xl p-6 hover:bg-white/[0.02] transition-all duration-300 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-1 group"
+              className="bg-black border z-50 border-white/10 rounded-xl p-6 hover:bg-white/[0.02] transition-all duration-300 hover:shadow-lg hover:shadow-white/10 hover:-translate-y-1 group"
             >
               <div className="mb-4 transform transition-transform duration-300 group-hover:scale-110 group-hover:text-violet-400">
                 {feature.icon}
@@ -122,6 +106,5 @@ export default function FeaturesSection() {
           )}
         </motion.div>
       </div>
-    </section>
-  );
+    </section>;
 }
