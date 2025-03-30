@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/components/SignupInNavBar/navbar";
 import dynamic from "next/dynamic";
 const CanvasBackground = dynamic(
-  () => import("@/components/landingPage/canvas-background"),
+  () => import("@/components/SignupInNavBar/canvas-background"),
   { ssr: false }
 );
 

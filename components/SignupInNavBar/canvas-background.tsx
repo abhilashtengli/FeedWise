@@ -5,6 +5,7 @@ import { useRef, useEffect } from "react";
 export default function CanvasBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Replace the entire Particle class with this updated version that handles null checks
   class Particle {
     x: number;
     y: number;
@@ -13,8 +14,6 @@ export default function CanvasBackground() {
     speedY: number;
     color: string;
     alpha: number;
-    pulse: number;
-    pulseSpeed: number;
 
     constructor(canvasWidth: number, canvasHeight: number) {
       this.x = Math.random() * canvasWidth;
@@ -24,8 +23,6 @@ export default function CanvasBackground() {
       this.speedY = Math.random() * 0.5 - 0.25;
       this.color = this.getRandomColor();
       this.alpha = Math.random() * 0.5 + 0.1;
-      this.pulse = 0;
-      this.pulseSpeed = Math.random() * 0.02 + 0.01;
     }
 
     getRandomColor() {
@@ -41,9 +38,6 @@ export default function CanvasBackground() {
       this.x += this.speedX;
       this.y += this.speedY;
 
-      // Pulse size effect
-      this.pulse += this.pulseSpeed;
-
       // Wrap around edges
       if (this.x < 0) this.x = canvasWidth;
       if (this.x > canvasWidth) this.x = 0;
@@ -52,16 +46,14 @@ export default function CanvasBackground() {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-      const pulseFactor = Math.sin(this.pulse) * 0.5 + 1;
-      const currentSize = this.size * pulseFactor;
-
       ctx.beginPath();
-      ctx.arc(this.x, this.y, currentSize, 0, Math.PI * 2);
-      ctx.fillStyle = `${this.color}${this.alpha * pulseFactor})`;
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `${this.color}${this.alpha})`;
       ctx.fill();
     }
   }
 
+  // Replace the entire LightBeam class with this updated version
   class LightBeam {
     x: number;
     y: number;
@@ -71,8 +63,6 @@ export default function CanvasBackground() {
     rotationSpeed: number;
     color: string;
     alpha: number;
-    pulse: number;
-    pulseSpeed: number;
 
     constructor(x: number, y: number, color: string, canvasWidth: number) {
       this.x = x;
@@ -83,18 +73,13 @@ export default function CanvasBackground() {
       this.rotationSpeed = Math.random() * 0.0005 + 0.0002;
       this.color = color;
       this.alpha = 0.05;
-      this.pulse = 0;
-      this.pulseSpeed = 0.01;
     }
 
     update() {
       this.angle += this.rotationSpeed;
-      this.pulse += this.pulseSpeed;
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-      const pulseAlpha = Math.sin(this.pulse) * 0.02 + this.alpha;
-
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
@@ -107,7 +92,7 @@ export default function CanvasBackground() {
         0
       );
       gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-      gradient.addColorStop(0.5, `${this.color}${pulseAlpha})`);
+      gradient.addColorStop(0.5, `${this.color}${this.alpha})`);
       gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
       ctx.fillStyle = gradient;
@@ -116,65 +101,7 @@ export default function CanvasBackground() {
     }
   }
 
-  class FloatingOrb {
-    x: number;
-    y: number;
-    radius: number;
-    color: string;
-    alpha: number;
-    pulse: number;
-    pulseSpeed: number;
-    moveX: number;
-    moveY: number;
-    moveSpeed: number;
-
-    constructor(x: number, y: number, radius: number, color: string) {
-      this.x = x;
-      this.y = y;
-      this.radius = radius;
-      this.color = color;
-      this.alpha = 0.1;
-      this.pulse = 0;
-      this.pulseSpeed = 0.02;
-      this.moveX = 0;
-      this.moveY = 0;
-      this.moveSpeed = 0.5;
-    }
-
-    update() {
-      this.pulse += this.pulseSpeed;
-      this.moveX += this.moveSpeed;
-      this.moveY = Math.sin(this.moveX * 0.05) * 30;
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
-      const pulseAlpha = Math.sin(this.pulse) * 0.05 + this.alpha;
-      const pulseRadius = this.radius + Math.sin(this.pulse) * 5;
-
-      const gradient = ctx.createRadialGradient(
-        this.x + this.moveX,
-        this.y + this.moveY,
-        0,
-        this.x + this.moveX,
-        this.y + this.moveY,
-        pulseRadius
-      );
-      gradient.addColorStop(0, `${this.color}${pulseAlpha * 2})`);
-      gradient.addColorStop(1, `${this.color}0)`);
-
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(
-        this.x + this.moveX,
-        this.y + this.moveY,
-        pulseRadius,
-        0,
-        Math.PI * 2
-      );
-      ctx.fill();
-    }
-  }
-
+  // Update the main useEffect code to handle null checks properly
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -216,34 +143,12 @@ export default function CanvasBackground() {
       )
     ];
 
-    // Create floating orbs
-    const orbs = [
-      new FloatingOrb(
-        canvas.width * 0.2,
-        canvas.height * 0.3,
-        50,
-        "rgba(138, 43, 226, "
-      ),
-      new FloatingOrb(
-        canvas.width * 0.8,
-        canvas.height * 0.7,
-        70,
-        "rgba(0, 191, 255, "
-      ),
-      new FloatingOrb(
-        canvas.width * 0.5,
-        canvas.height * 0.5,
-        40,
-        "rgba(255, 255, 255, "
-      )
-    ];
-
     // Mouse interaction
     let mouseX = 0;
     let mouseY = 0;
     const mouseRadius = 100;
 
-    canvas.addEventListener("mousemove", (e) => {
+    canvas.addEventListener("mousemove", e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     });
@@ -256,20 +161,14 @@ export default function CanvasBackground() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw orbs
-      orbs.forEach((orb) => {
-        orb.update();
-        orb.draw(ctx);
-      });
-
       // Draw beams
-      beams.forEach((beam) => {
+      beams.forEach(beam => {
         beam.update();
         beam.draw(ctx);
       });
 
       // Draw particles
-      particles.forEach((particle) => {
+      particles.forEach(particle => {
         // Mouse interaction
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;
