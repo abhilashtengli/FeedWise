@@ -15,15 +15,20 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
-// import axios from "axios";
-
+import { useEffect, useState } from "react";
+import Navbar from "@/components/SignupInNavBar/navbar";
+import dynamic from "next/dynamic";
+const CanvasBackground = dynamic(
+  () => import("@/components/landingPage/canvas-background"),
+  { ssr: false }
+);
 const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [signinError, setSigninError] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   const router = useRouter();
 
@@ -72,9 +77,16 @@ const Signin = () => {
     }
   };
 
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen ">
+      <Navbar />
+      <div className="relative flex justify-center items-center min-h-screen overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <CanvasBackground />
+        </div>
         <Card className="relative w-full max-w-xs border rounded-3xl py-8 mb-8 bg-black/50  border-gray-800 backdrop-blur-lg shadow-xl p-6 text-white bg-gradient-to-tr from-black to-zinc-900">
           <div className=""></div>
           <CardHeader>

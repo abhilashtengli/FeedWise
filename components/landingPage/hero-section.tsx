@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import CanvasBackground from "./canvas-background";
 
 export default function HeroSection() {
-  const [showDemo, setShowDemo] = useState(false);
-
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20">
       {/* Canvas Background */}
@@ -73,100 +70,7 @@ export default function HeroSection() {
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-violet-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white/10 hover:bg-white/5 group relative overflow-hidden backdrop-blur-sm"
-              onClick={() => setShowDemo(!showDemo)}
-            >
-              <span className="relative z-10 flex items-center">
-                <Play className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
-                See Demo
-              </span>
-              <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Button>
           </motion.div>
-
-          {showDemo &&
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative rounded-xl overflow-hidden shadow-2xl shadow-white/5 border border-white/10 max-w-4xl mx-auto mt-16 backdrop-blur-sm"
-            >
-              <div className="w-full aspect-video bg-gradient-to-br from-violet-900/20 to-cyan-900/20 flex items-center justify-center">
-                <div className="text-white/70 text-center p-8">
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="space-y-6 w-full max-w-lg">
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-white/70">
-                            Sentiment Analysis
-                          </span>
-                          <span className="text-sm font-medium text-white">
-                            72%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-green-400 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: "72%" }}
-                            transition={{ duration: 1.5, ease: "easeOut" }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-white/70">
-                            Feature Extraction
-                          </span>
-                          <span className="text-sm font-medium text-white">
-                            85%
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-violet-400 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: "85%" }}
-                            transition={{
-                              duration: 1.5,
-                              delay: 0.2,
-                              ease: "easeOut"
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-white/70">
-                            Customer Satisfaction
-                          </span>
-                          <span className="text-sm font-medium text-white">
-                            8.7/10
-                          </span>
-                        </div>
-                        <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full bg-cyan-400 rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: "87%" }}
-                            transition={{
-                              duration: 1.5,
-                              delay: 0.4,
-                              ease: "easeOut"
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>}
         </div>
       </div>
 

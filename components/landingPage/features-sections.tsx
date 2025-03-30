@@ -9,7 +9,6 @@ import {
   Search,
   LineChart
 } from "lucide-react";
-import BgBox from "./bg-box";
 
 const features = [
   {
@@ -70,24 +69,41 @@ export default function FeaturesSection() {
     }
   };
 
-  return <section id="features" className="relative py-24 bg-black">
-      <div className="lg:block hidden">
-          <BgBox rowNum={5} />
-      </div>
+  return (
+    <section id="features" className="relative py-24 bg-black z-40">
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
 
       <div className="container px-4 md:px-6 mx-auto max-w-6xl z-50">
         <div className="text-center mb-16 z-50">
-          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl md:text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400"
+          >
             Powerful Features
           </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }} className="text-xl text-white/70 max-w-2xl mx-auto">
-            Unlock the full potential of your product reviews with our advanced AI tools
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-xl text-white/70 max-w-2xl mx-auto"
+          >
+            Unlock the full potential of your product reviews with our advanced
+            AI tools
           </motion.p>
         </div>
 
-        <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) =>
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {features.map((feature, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
@@ -103,8 +119,9 @@ export default function FeaturesSection() {
                 {feature.description}
               </p>
             </motion.div>
-          )}
+          ))}
         </motion.div>
       </div>
-    </section>;
+    </section>
+  );
 }
