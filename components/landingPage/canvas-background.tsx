@@ -243,7 +243,7 @@ export default function CanvasBackground() {
     let mouseY = 0;
     const mouseRadius = 100;
 
-    canvas.addEventListener("mousemove", (e) => {
+    canvas.addEventListener("mousemove", e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
     });
@@ -257,19 +257,19 @@ export default function CanvasBackground() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw orbs
-      orbs.forEach((orb) => {
+      orbs.forEach(orb => {
         orb.update();
         orb.draw(ctx);
       });
 
       // Draw beams
-      beams.forEach((beam) => {
+      beams.forEach(beam => {
         beam.update();
         beam.draw(ctx);
       });
 
       // Draw particles
-      particles.forEach((particle) => {
+      particles.forEach(particle => {
         // Mouse interaction
         const dx = mouseX - particle.x;
         const dy = mouseY - particle.y;

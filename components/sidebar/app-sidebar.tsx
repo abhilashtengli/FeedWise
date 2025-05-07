@@ -148,7 +148,7 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
                 <motion.div>
                   <MessageSquare className="h-5 w-5" />
                 </motion.div>
-                <Link href="/analyze-reviews">
+                <Link href="/">
                   <motion.span className="font-semibold">Feedwise</motion.span>
                 </Link>
               </div>

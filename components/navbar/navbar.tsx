@@ -131,7 +131,7 @@ export function Navbar() {
               <div>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <div className="flex h-8 w-8 items-center justify-center  rounded-full bg-purple-600 text-white">
-                    {user.slice(0, 2).toUpperCase()}
+                    {user?.slice(0, 2).toUpperCase()}
                   </div>
                 </Button>
               </div>
