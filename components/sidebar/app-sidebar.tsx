@@ -364,9 +364,9 @@ export function AppSidebar({ initialReports = [] }: AppSidebarProps) {
                   </motion.div>
                   <div className="flex flex-col items-start">
                     <span>Upgrade plan</span>
-                    <span className="text-xs text-muted-foreground">
+                    {/* <span className="text-xs text-muted-foreground">
                       More access to the best models
-                    </span>
+                    </span> */}
                   </div>
                 </Button>
               </motion.div>
