@@ -8,7 +8,7 @@ import CanvasBackground from "./canvas-background";
 
 export default function HeroSection() {
   const { scrollY } = useScroll();
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
   const y = useTransform(scrollY, [0, 300], [0, 100]);
 
   const [isVisible, setIsVisible] = useState(false);

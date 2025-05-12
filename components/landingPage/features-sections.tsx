@@ -7,7 +7,7 @@ import {
   TrendingUp,
   Zap,
   Search,
-  LineChart
+  Lightbulb
 } from "lucide-react";
 
 const features = [
@@ -42,10 +42,10 @@ const features = [
       "Process thousands of reviews in seconds with our powerful AI engine for immediate insights."
   },
   {
-    icon: <LineChart className="h-10 w-10 text-emerald-400" />,
-    title: "Competitive Analysis",
+    icon: <Lightbulb className="h-10 w-10 text-green-400" />,
+    title: "Actionable Recommendations",
     description:
-      "Compare your product reviews against competitors to identify strengths and opportunities."
+      "Suggest solutions and next steps for customer complaints to enhance satisfaction and reduce churn."
   }
 ];
 
